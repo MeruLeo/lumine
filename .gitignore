@@ -1,0 +1,23 @@
+# ------------------------
+# Common Ignore for Root
+# ------------------------
+node_modules/
+.pnpm/
+dist/
+build/
+.env*
+.env.* 
+.DS_Store
+*.log
+*.pem
+*.tsbuildinfo
+
+# Vercel / Netlify / CI Tools
+.vercel/
+.netlify/
+coverage/
+
+# OS / IDE files
+.vscode/
+.idea/
+*.swp

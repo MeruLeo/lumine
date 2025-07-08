@@ -1,0 +1,181 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "rokh";
+  src: url("../public/fonts/Rokh-Bold.otf");
+}
+
+@font-face {
+  font-family: "sf-med";
+  src: url("../public/fonts/SFArabic-Regular.ttf");
+}
+
+@font-face {
+  font-family: "sf-bold";
+  src: url("../public/fonts/SFArabic-\ Bold.ttf");
+}
+
+:root {
+  --font-rokh: "rokh", sans-serif;
+  --font-sf_med: "sf-med", sans-serif;
+  --font-sf_bold: "sf-bold", sans-serif;
+  --color-Slate_Blue: "#f8f7f4";
+}
+
+.neu {
+  background: linear-gradient(225deg, #202020, #1b1b1b);
+  box-shadow:
+    -10px 10px 40px #1a1a1a,
+    10px -10px 40px #232323;
+}
+
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.liquid-border-grad {
+  position: relative;
+  background: #1a1a1a;
+}
+.liquid-border-grad::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(145deg, red 0%, rgba(0, 0, 0, 0.15) 100%);
+  mask: linear-gradient(red 0 0);
+  -webkit-mask-composite: destination-in;
+  mask-composite: intersect;
+}
+
+@layer utilities {
+  .gradient-border {
+    z-index: 0;
+    position: relative;
+  }
+
+  .gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    background: linear-gradient(
+      to top right,
+      rgba(4, 79, 199, 0) 75%,
+      #9e9e9e 100%,
+      rgba(4, 79, 199, 0) 100%
+    );
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: exclude;
+    padding: 2px;
+    pointer-events: none;
+  }
+  .gradient-border__x {
+    background: rgba(31, 31, 31, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .gradient-border__x::before {
+    content: "";
+    position: absolute;
+    inset: -2px; /* ضخامت بوردر */
+    border-radius: inherit;
+    background: linear-gradient(
+      to top,
+      rgba(4, 79, 199, 0),
+      rgba(89, 136, 210, 0.41) 53%,
+      rgba(4, 79, 199, 0) 100%
+    );
+    z-index: -1;
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: exclude;
+    padding: 2px; /* ضخامت بوردر */
+    pointer-events: none; /* جلوگیری از تأثیر روی رویدادها */
+  }
+}
+
+/* bottom */
+.gradient-border_bottom {
+  z-index: 0;
+  position: relative;
+}
+
+.gradient-border_bottom::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(
+    to bottom left,
+    rgba(4, 79, 199, 0) 75%,
+    #9e9e9e 100%,
+    rgba(4, 79, 199, 0) 100%
+  );
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: exclude;
+  padding: 2px;
+  pointer-events: none;
+}
+.gradient-border__x_bottom {
+  background: rgba(31, 31, 31, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.gradient-border__x_bottom::before {
+  content: "";
+  position: absolute;
+  inset: -2px; /* ضخامت بوردر */
+  border-radius: inherit;
+  background: linear-gradient(
+    to top,
+    rgba(4, 79, 199, 0),
+    rgba(89, 136, 210, 0.41) 53%,
+    rgba(4, 79, 199, 0) 100%
+  );
+  z-index: -1;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: exclude;
+  padding: 2px; /* ضخامت بوردر */
+  pointer-events: none; /* جلوگیری از تأثیر روی رویدادها */
+}
+
+.load-page {
+  animation: loadPage ease 0.4s forwards;
+}
+
+@keyframes loadPage {
+  from {
+    opacity: 0;
+    filter: blur(50px);
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+  }
+}

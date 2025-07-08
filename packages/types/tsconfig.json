@@ -1,0 +1,16 @@
+// packages/types/tsconfig.json
+{
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "moduleResolution": "node",
+    "target": "ESNext",
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "strict": true
+  },
+  "include": ["src"]
+}

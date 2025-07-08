@@ -1,0 +1,53 @@
+import { useProjectStore } from "@/stores/project.store";
+
+export const useProject = () => {
+  const {
+    projects,
+    loading,
+    error,
+    currentProject,
+    searchTerm,
+    filteredProjects,
+    clearError,
+    createProject,
+    deleteProject,
+    fetchAll,
+    fetchByCategory,
+    fetchById,
+    fetchByModelId,
+    fetchByModelingCode,
+    fetchByName,
+    fetchByStatus,
+    fetchByStatusWithModelingCode,
+    resetCurrent,
+    updateProject,
+    resetProjects,
+    applySearchFilter,
+    setSearchTerm,
+  } = useProjectStore();
+
+  return {
+    projects,
+    loading,
+    searchTerm,
+    error,
+    currentProject,
+    filteredProjects,
+    clearError,
+    createProject,
+    deleteProject,
+    fetchAll,
+    fetchByCategory,
+    fetchById,
+    fetchByModelId,
+    fetchByModelingCode,
+    fetchByName,
+    fetchByStatus,
+    fetchByStatusWithModelingCode,
+    resetCurrent,
+    updateProject,
+    resetProjects,
+    applySearchFilter,
+    setSearchTerm,
+  };
+};
