@@ -7,7 +7,6 @@ import { useEffect } from "react";
 import { ProjectsInfo } from "@/components/projects/projectsInfo";
 import { useProject } from "@/hooks/useProject";
 import { ProjectHeader } from "@/components/projects/project/projectHeader";
-import { useUser } from "@/hooks/useUser";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function ProjectPage() {

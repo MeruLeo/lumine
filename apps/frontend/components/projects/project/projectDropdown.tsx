@@ -16,11 +16,15 @@ import {
 } from "@heroicons/react/20/solid";
 
 import { EllipsIcon } from "@/components/icons/icons";
+import { IProjectDropdown } from "@/types/projects";
+import { useProject } from "@/hooks/useProject";
 
 export type Role = "model" | "admin" | "developer";
 
 export const ProjectDropdown = ({ role }: { role: Role }) => {
-  const adminItems = [
+  const { updateProject, currentProject } = useProject();
+
+  const adminItems: IProjectDropdown[] = [
     {
       key: "change-status",
       label: "تغییر وضعیت",
@@ -45,7 +49,7 @@ export const ProjectDropdown = ({ role }: { role: Role }) => {
     },
   ];
 
-  const userItems = [
+  const userItems: IProjectDropdown[] = [
     {
       key: "request-edit",
       label: "درخواست ویرایش",
@@ -60,21 +64,45 @@ export const ProjectDropdown = ({ role }: { role: Role }) => {
 
   const items = role === "admin" ? adminItems : userItems;
 
+  const handleAction = async (key: string) => {
+    if (!currentProject) return;
+
+    switch (key) {
+      case "change-status":
+        await updateProject(currentProject._id, { status: "completed" });
+        break;
+      case "change-model":
+        break;
+      case "edit":
+        break;
+      case "delete":
+        break;
+      case "request-edit":
+        break;
+      case "view-status":
+        break;
+    }
+  };
+
   return (
-    <Dropdown radius="lg" backdrop="blur">
+    <Dropdown backdrop="blur" radius="lg">
       <DropdownTrigger>
-        <Button isIconOnly radius="full" size="lg" className="bg-Jet_Black_4">
+        <Button isIconOnly className="bg-Jet_Black_4" radius="full" size="lg">
           <EllipsIcon />
         </Button>
       </DropdownTrigger>
 
-      <DropdownMenu variant="faded" aria-label="Project Actions">
+      <DropdownMenu
+        aria-label="Project Actions"
+        variant="faded"
+        onAction={(key) => handleAction(key as string)}
+      >
         {items.map((item) => (
           <DropdownItem
             key={item.key}
-            startContent={item.icon}
             className={item.className}
             color={item.color}
+            startContent={item.icon}
           >
             {item.label}
           </DropdownItem>

@@ -208,7 +208,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   updateProject: async (id, data) => {
     set({ loading: true });
     try {
-      const res = await API.patch(`/projects/${id}`, data);
+      const res = await API.put(`/projects/${id}`, data);
       const updated = res.data.data.project;
 
       set((state) => ({
