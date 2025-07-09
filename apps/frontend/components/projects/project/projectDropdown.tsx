@@ -18,10 +18,16 @@ import {
 import { EllipsIcon } from "@/components/icons/icons";
 import { IProjectDropdown } from "@/types/projects";
 import { useProject } from "@/hooks/useProject";
+import { useState } from "react";
+import { ChangeStatusModal } from "./changeStatusModal";
 
 export type Role = "model" | "admin" | "developer";
 
 export const ProjectDropdown = ({ role }: { role: Role }) => {
+  const [activeModal, setActiveModal] = useState<
+    null | "status" | "model" | "edit" | "delete"
+  >(null);
+
   const { updateProject, currentProject } = useProject();
 
   const adminItems: IProjectDropdown[] = [
@@ -69,7 +75,7 @@ export const ProjectDropdown = ({ role }: { role: Role }) => {
 
     switch (key) {
       case "change-status":
-        await updateProject(currentProject._id, { status: "completed" });
+        setActiveModal("status");
         break;
       case "change-model":
         break;
@@ -85,29 +91,35 @@ export const ProjectDropdown = ({ role }: { role: Role }) => {
   };
 
   return (
-    <Dropdown backdrop="blur" radius="lg">
-      <DropdownTrigger>
-        <Button isIconOnly className="bg-Jet_Black_4" radius="full" size="lg">
-          <EllipsIcon />
-        </Button>
-      </DropdownTrigger>
+    <>
+      <Dropdown backdrop="blur" radius="lg">
+        <DropdownTrigger>
+          <Button isIconOnly className="bg-Jet_Black_4" radius="full" size="lg">
+            <EllipsIcon />
+          </Button>
+        </DropdownTrigger>
 
-      <DropdownMenu
-        aria-label="Project Actions"
-        variant="faded"
-        onAction={(key) => handleAction(key as string)}
-      >
-        {items.map((item) => (
-          <DropdownItem
-            key={item.key}
-            className={item.className}
-            color={item.color}
-            startContent={item.icon}
-          >
-            {item.label}
-          </DropdownItem>
-        ))}
-      </DropdownMenu>
-    </Dropdown>
+        <DropdownMenu
+          aria-label="Project Actions"
+          variant="faded"
+          onAction={(key) => handleAction(key as string)}
+        >
+          {items.map((item) => (
+            <DropdownItem
+              key={item.key}
+              className={item.className}
+              color={item.color}
+              startContent={item.icon}
+            >
+              {item.label}
+            </DropdownItem>
+          ))}
+        </DropdownMenu>
+      </Dropdown>
+      <ChangeStatusModal
+        isOpen={activeModal === "status"}
+        onOpenChange={(open) => !open && setActiveModal(null)}
+      />
+    </>
   );
 };

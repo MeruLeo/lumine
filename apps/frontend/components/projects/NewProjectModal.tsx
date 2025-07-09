@@ -47,8 +47,6 @@ export default function NewProjectModal({
   isOpen,
   onOpenChange,
 }: NewProjectModalProps) {
-  const { onClose } = useDisclosure();
-
   const { getAllUsers, users } = useUser();
 
   useEffect(() => {
@@ -105,6 +103,7 @@ export default function NewProjectModal({
     try {
       if (!startDate || !endDate) {
         console.log("لطفاً تاریخ شروع و پایان را انتخاب کنید");
+
         return;
       }
 
