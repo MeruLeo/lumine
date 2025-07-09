@@ -19,7 +19,8 @@ import { EllipsIcon } from "@/components/icons/icons";
 import { IProjectDropdown } from "@/types/projects";
 import { useProject } from "@/hooks/useProject";
 import { useState } from "react";
-import { ChangeStatusModal } from "./changeStatusModal";
+import { ChangeStatusModal } from "./dropdown/changeStatusModal";
+import { ChangeModelModal } from "./dropdown/changeModelModal";
 
 export type Role = "model" | "admin" | "developer";
 
@@ -28,7 +29,7 @@ export const ProjectDropdown = ({ role }: { role: Role }) => {
     null | "status" | "model" | "edit" | "delete"
   >(null);
 
-  const { updateProject, currentProject } = useProject();
+  const { currentProject } = useProject();
 
   const adminItems: IProjectDropdown[] = [
     {
@@ -78,6 +79,7 @@ export const ProjectDropdown = ({ role }: { role: Role }) => {
         setActiveModal("status");
         break;
       case "change-model":
+        setActiveModal("model");
         break;
       case "edit":
         break;
@@ -118,6 +120,10 @@ export const ProjectDropdown = ({ role }: { role: Role }) => {
       </Dropdown>
       <ChangeStatusModal
         isOpen={activeModal === "status"}
+        onOpenChange={(open) => !open && setActiveModal(null)}
+      />
+      <ChangeModelModal
+        isOpen={activeModal === "model"}
         onOpenChange={(open) => !open && setActiveModal(null)}
       />
     </>
