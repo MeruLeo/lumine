@@ -22,6 +22,7 @@ import { useState } from "react";
 import { ChangeStatusModal } from "./dropdown/changeStatusModal";
 import { ChangeModelModal } from "./dropdown/changeModelModal";
 import EditProjectModal from "./dropdown/editInfo";
+import DeleteProjectModal from "./dropdown/deleteProjectModal";
 
 export type Role = "model" | "admin" | "developer";
 
@@ -86,6 +87,7 @@ export const ProjectDropdown = ({ role }: { role: Role }) => {
         setActiveModal("edit");
         break;
       case "delete":
+        setActiveModal("delete");
         break;
       case "request-edit":
         break;
@@ -130,6 +132,10 @@ export const ProjectDropdown = ({ role }: { role: Role }) => {
       />
       <EditProjectModal
         isOpen={activeModal === "edit"}
+        onOpenChange={(open) => !open && setActiveModal(null)}
+      />
+      <DeleteProjectModal
+        isOpen={activeModal === "delete"}
         onOpenChange={(open) => !open && setActiveModal(null)}
       />
     </>
