@@ -4,8 +4,8 @@ export const successResponse = (
   res: Response,
   statusCode: number,
   data: unknown
-) => {
-  return res.status(statusCode).json({ data, statusCode, success: true });
+): void => {
+  res.status(statusCode).json({ data, statusCode, success: true });
 };
 
 export const errorResponse = (
@@ -13,8 +13,6 @@ export const errorResponse = (
   statusCode: number,
   message: string,
   data: unknown = null
-) => {
-  return res
-    .status(statusCode)
-    .json({ data, statusCode, message, success: false });
+): void => {
+  res.status(statusCode).json({ data, statusCode, message, success: false });
 };
