@@ -10,6 +10,7 @@ import {
   UserIcon,
   XIcon,
 } from "@/components/icons/icons";
+import NewNotificationModal from "@/components/inbox/NewTicketModal";
 import NewProjectModal from "@/components/projects/NewProjectModal";
 import { ProjectsSecs } from "@/components/projects/projectsSec";
 import { useAuth } from "@/hooks/useAuth";
@@ -25,6 +26,7 @@ export default function InboxLayout({
   const { getMe, user } = useAuth();
 
   const [btnType, setBtnType] = useState<"ticket" | "notif">("ticket");
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     getMe();
@@ -82,11 +84,11 @@ export default function InboxLayout({
           className={`bg-Slate_Blue`}
           startContent={<PlusIcon />}
           size="lg"
-          // onPress={() => setIsOpen(true)}
+          onPress={() => setIsOpen(true)}
         >
           {btnType === "ticket" ? "تیکت جدید" : "اعلامیه جدید"}
         </Button>
-        {/* <NewProjectModal isOpen={isOpen} onOpenChange={setIsOpen} /> */}
+        <NewNotificationModal isOpen={isOpen} onOpenChange={setIsOpen} />
       </div>
       <Tabs radius="full" size="lg" className="my-8 -mb-4">
         <Tab title="تیکت ها">
