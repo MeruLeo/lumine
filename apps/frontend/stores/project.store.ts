@@ -208,7 +208,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   updateProject: async (id, data) => {
     set({ loading: true });
     try {
-      const res = await API.patch(`/projects/${id}`, data);
+      const res = await API.put(`/projects/${id}`, data);
       const updated = res.data.data.project;
 
       set((state) => ({
@@ -230,7 +230,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   deleteProject: async (id) => {
     set({ loading: true });
     try {
-      await API.delete(`/project/${id}`);
+      await API.delete(`/projects/${id}`);
       set((state) => ({
         projects: state.projects.filter((p) => p._id !== id),
         filteredProjects: state.filteredProjects.filter((p) => p._id !== id),

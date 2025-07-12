@@ -13,22 +13,20 @@ import {
   SelectItem,
   DatePicker,
   Form,
-  useDisclosure,
 } from "@heroui/react";
 import { I18nProvider } from "@react-aria/i18n";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
+import { parseDate } from "@internationalized/date";
 
 import { useProject } from "@/hooks/useProject";
-import { useUser } from "@/hooks/useUser";
 
-const projectSchema = z.object({
+const editSchema = z.object({
   name: z.string().min(1, "نام پروژه اجباری است"),
   description: z.string().min(1, "توضیحات پروژه اجباری است"),
   category: z.string().min(1, "دسته‌بندی را انتخاب کنید"),
-  model: z.string().min(1, "مدل را انتخاب کنید"),
   budget: z
     .number({ invalid_type_error: "بودجه باید عدد باشد" })
     .positive("بودجه باید بیشتر از صفر باشد"),
@@ -36,22 +34,21 @@ const projectSchema = z.object({
   endDate: z.any(),
 });
 
-type ProjectFormType = z.infer<typeof projectSchema>;
+type EditFormType = z.infer<typeof editSchema>;
 
-interface NewProjectModalProps {
+interface EditProjectModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export default function NewProjectModal({
+export default function EditProjectModal({
   isOpen,
   onOpenChange,
-}: NewProjectModalProps) {
-  const { getAllUsers, users } = useUser();
+}: EditProjectModalProps) {
+  const { currentProject, updateProject } = useProject();
 
-  useEffect(() => {
-    getAllUsers();
-  }, []);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
 
   const categoryArray = [
     { key: "fashion", label: "مد و فشن" },
@@ -75,49 +72,59 @@ export default function NewProjectModal({
     { key: "others", label: "سایر" },
   ] as const;
 
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
-
-  const { createProject } = useProject();
-
   const {
     register,
     handleSubmit,
     control,
-    formState: { errors },
     reset,
-  } = useForm<ProjectFormType>({
-    resolver: zodResolver(projectSchema),
+    formState: { errors },
+  } = useForm<EditFormType>({
+    resolver: zodResolver(editSchema),
     defaultValues: {
       name: "",
       description: "",
       category: "",
-      model: "",
       budget: 0,
       startDate: undefined,
       endDate: undefined,
     },
   });
 
+  useEffect(() => {
+    if (currentProject) {
+      const parsedStart = parseDate(currentProject.startDate.split("T")[0]);
+      const parsedEnd = parseDate(currentProject.endDate.split("T")[0]);
+
+      reset({
+        name: currentProject.name,
+        description: currentProject.description,
+        category: currentProject.category,
+        budget: currentProject.budget,
+        startDate: parsedStart,
+        endDate: parsedEnd,
+      });
+
+      setStartDate(parsedStart);
+      setEndDate(parsedEnd);
+    }
+  }, [currentProject, isOpen]);
+
   const onSubmit = async (data: ProjectFormType) => {
     try {
       if (!startDate || !endDate) {
         console.log("لطفاً تاریخ شروع و پایان را انتخاب کنید");
-
         return;
       }
 
       const payload = {
         ...data,
-        startDate,
-        endDate,
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
       };
 
-      await createProject(payload);
+      console.log(payload);
 
-      reset();
-      setStartDate(null);
-      setEndDate(null);
+      await updateProject(currentProject._id, payload);
       onOpenChange(false);
     } catch (err) {
       console.error(err);
@@ -129,9 +136,7 @@ export default function NewProjectModal({
       <ModalContent>
         {(onClose) => (
           <>
-            <ModalHeader className="flex flex-col gap-1">
-              پروژه جدید
-            </ModalHeader>
+            <ModalHeader>ویرایش پروژه</ModalHeader>
             <ModalBody>
               <Form onSubmit={handleSubmit(onSubmit)}>
                 <Input
@@ -154,54 +159,29 @@ export default function NewProjectModal({
                   errorMessage={errors.description?.message}
                 />
 
-                <div className="w-full flex gap-1">
-                  <Controller
-                    name="category"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        label="دسته‌بندی"
-                        radius="lg"
-                        variant="faded"
-                        selectedKeys={[field.value]}
-                        onSelectionChange={(keys) =>
-                          field.onChange(Array.from(keys)[0])
-                        }
-                        isInvalid={!!errors.category}
-                        errorMessage={errors.category?.message}
-                      >
-                        {categoryArray.map((category) => (
-                          <SelectItem key={category.key}>
-                            {category.label}
-                          </SelectItem>
-                        ))}
-                      </Select>
-                    )}
-                  />
-                  <Controller
-                    name="model"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        label="مدل"
-                        radius="lg"
-                        variant="faded"
-                        selectedKeys={[field.value]}
-                        onSelectionChange={(keys) =>
-                          field.onChange(Array.from(keys)[0])
-                        }
-                        isInvalid={!!errors.model}
-                        errorMessage={errors.model?.message}
-                      >
-                        {users.map((user) => (
-                          <SelectItem key={user._id}>
-                            {user.fullName}
-                          </SelectItem>
-                        ))}
-                      </Select>
-                    )}
-                  />
-                </div>
+                <Controller
+                  name="category"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      label="دسته‌بندی"
+                      radius="lg"
+                      variant="faded"
+                      selectedKeys={[field.value]}
+                      onSelectionChange={(keys) =>
+                        field.onChange(Array.from(keys)[0])
+                      }
+                      isInvalid={!!errors.category}
+                      errorMessage={errors.category?.message}
+                    >
+                      {categoryArray.map((category) => (
+                        <SelectItem key={category.key}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
+                    </Select>
+                  )}
+                />
 
                 <Input
                   {...register("budget", { valueAsNumber: true })}
@@ -226,9 +206,8 @@ export default function NewProjectModal({
                           variant="faded"
                           value={field.value}
                           onChange={(val) => {
-                            const date = new Date(val);
-
-                            setStartDate(date);
+                            setStartDate(val);
+                            field.onChange(val);
                           }}
                           isInvalid={!!errors.startDate}
                           errorMessage={`${errors.startDate?.message}`}
@@ -247,9 +226,8 @@ export default function NewProjectModal({
                           variant="faded"
                           value={field.value}
                           onChange={(val) => {
-                            const date = new Date(val);
-
-                            setEndDate(date);
+                            setEndDate(val);
+                            field.onChange(val);
                           }}
                           isInvalid={!!errors.endDate}
                           errorMessage={`${errors.endDate?.message}`}
@@ -258,17 +236,17 @@ export default function NewProjectModal({
                     )}
                   />
                 </div>
+
                 <Button
                   type="submit"
                   radius="lg"
                   fullWidth
                   className="bg-Porcelain_White text-Jet_Black mt-4"
                 >
-                  ایجاد پروژه
+                  ذخیره تغییرات
                 </Button>
               </Form>
             </ModalBody>
-            <ModalFooter></ModalFooter>
           </>
         )}
       </ModalContent>

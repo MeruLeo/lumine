@@ -16,11 +16,24 @@ import {
 } from "@heroicons/react/20/solid";
 
 import { EllipsIcon } from "@/components/icons/icons";
+import { IProjectDropdown } from "@/types/projects";
+import { useProject } from "@/hooks/useProject";
+import { useState } from "react";
+import { ChangeStatusModal } from "./dropdown/changeStatusModal";
+import { ChangeModelModal } from "./dropdown/changeModelModal";
+import EditProjectModal from "./dropdown/editInfo";
+import DeleteProjectModal from "./dropdown/deleteProjectModal";
 
 export type Role = "model" | "admin" | "developer";
 
 export const ProjectDropdown = ({ role }: { role: Role }) => {
-  const adminItems = [
+  const [activeModal, setActiveModal] = useState<
+    null | "status" | "model" | "edit" | "delete"
+  >(null);
+
+  const { currentProject } = useProject();
+
+  const adminItems: IProjectDropdown[] = [
     {
       key: "change-status",
       label: "تغییر وضعیت",
@@ -45,7 +58,7 @@ export const ProjectDropdown = ({ role }: { role: Role }) => {
     },
   ];
 
-  const userItems = [
+  const userItems: IProjectDropdown[] = [
     {
       key: "request-edit",
       label: "درخواست ویرایش",
@@ -60,26 +73,71 @@ export const ProjectDropdown = ({ role }: { role: Role }) => {
 
   const items = role === "admin" ? adminItems : userItems;
 
-  return (
-    <Dropdown radius="lg" backdrop="blur">
-      <DropdownTrigger>
-        <Button isIconOnly radius="full" size="lg" className="bg-Jet_Black_4">
-          <EllipsIcon />
-        </Button>
-      </DropdownTrigger>
+  const handleAction = async (key: string) => {
+    if (!currentProject) return;
 
-      <DropdownMenu variant="faded" aria-label="Project Actions">
-        {items.map((item) => (
-          <DropdownItem
-            key={item.key}
-            startContent={item.icon}
-            className={item.className}
-            color={item.color}
-          >
-            {item.label}
-          </DropdownItem>
-        ))}
-      </DropdownMenu>
-    </Dropdown>
+    switch (key) {
+      case "change-status":
+        setActiveModal("status");
+        break;
+      case "change-model":
+        setActiveModal("model");
+        break;
+      case "edit":
+        setActiveModal("edit");
+        break;
+      case "delete":
+        setActiveModal("delete");
+        break;
+      case "request-edit":
+        break;
+      case "view-status":
+        break;
+    }
+  };
+
+  return (
+    <>
+      <Dropdown backdrop="blur" radius="lg">
+        <DropdownTrigger>
+          <Button isIconOnly className="bg-Jet_Black_4" radius="full" size="lg">
+            <EllipsIcon />
+          </Button>
+        </DropdownTrigger>
+
+        <DropdownMenu
+          aria-label="Project Actions"
+          variant="faded"
+          onAction={(key) => handleAction(key as string)}
+        >
+          {items.map((item) => (
+            <DropdownItem
+              key={item.key}
+              className={item.className}
+              color={item.color}
+              startContent={item.icon}
+            >
+              {item.label}
+            </DropdownItem>
+          ))}
+        </DropdownMenu>
+      </Dropdown>
+      <ChangeStatusModal
+        isOpen={activeModal === "status"}
+        onOpenChange={(open) => !open && setActiveModal(null)}
+      />
+      <ChangeModelModal
+        isOpen={activeModal === "model"}
+        onOpenChange={(open) => !open && setActiveModal(null)}
+      />
+      <EditProjectModal
+        isOpen={activeModal === "edit"}
+        onOpenChange={(open) => !open && setActiveModal(null)}
+      />
+      <DeleteProjectModal
+        isOpen={activeModal === "delete"}
+        onOpenChange={(open) => !open && setActiveModal(null)}
+      />
+    </>
   );
 };

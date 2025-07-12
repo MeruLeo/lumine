@@ -62,71 +62,122 @@ export const getProjectById = async (req: Request, res: Response) => {
   }
 };
 
-export const updateProjectById = async (req: Request, res: Response) => {
+const allowedFieldsToUpdate = new Set([
+  "name",
+  "status",
+  "startDate",
+  "endDate",
+  "budget",
+  "category",
+  "description",
+  "model",
+]);
+
+const allowedStatuses = new Set([
+  "pending",
+  "in_progress",
+  "completed",
+  "cancelled",
+]);
+
+const allowedCategories = new Set(["fashion", "advertisement", "editorial"]);
+
+export const updateProjectById = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { projectId } = req.params;
+
     if (!mongoose.Types.ObjectId.isValid(projectId)) {
-      errorResponse(res, 400, "Invalid project ID format", projectId);
-      return;
+      return errorResponse(res, 400, "Invalid project ID format", projectId);
     }
 
-    const allowedFieldsToUpdate = [
-      "name",
-      "status",
-      "startDate",
-      "endDate",
-      "budget",
-      "category",
-      "description",
-    ];
+    const updates = req.body;
 
-    const updates: Record<string, any> = req.body;
-    const updateKeys = Object.keys(updates);
-
-    const validKeys = updateKeys.filter((key) =>
-      allowedFieldsToUpdate.includes(key)
+    const updateKeys = Object.keys(updates).filter((key) =>
+      allowedFieldsToUpdate.has(key)
     );
 
-    if (validKeys.length === 0) {
-      errorResponse(
+    if (updateKeys.length === 0) {
+      return errorResponse(
         res,
         400,
         "No valid fields provided for update",
-        allowedFieldsToUpdate
+        Array.from(allowedFieldsToUpdate)
       );
-      return;
     }
 
     const updateData: Record<string, any> = {};
-    const allowedStatuses = [
-      "pending",
-      "in_progress",
-      "completed",
-      "cancelled",
-    ];
 
-    for (const key of validKeys) {
+    for (const key of updateKeys) {
       const value = updates[key];
 
       if (typeof value === "string" && value.trim() === "") {
-        errorResponse(res, 400, `Field "${key}" cannot be empty`, value);
-        return;
+        return errorResponse(res, 400, `Field "${key}" cannot be empty`, value);
       }
 
-      if (key === "status" && !allowedStatuses.includes(value)) {
-        errorResponse(res, 400, `Invalid status value`, value);
-        return;
-      }
+      switch (key) {
+        case "status":
+          if (!allowedStatuses.has(value)) {
+            return errorResponse(res, 400, `Invalid status value`, value);
+          }
+          updateData.status = value;
+          break;
 
-      if (key === "category") {
-        const allowedCategories = ["fashion", "advertisement", "editorial"];
-        if (value !== null && !allowedCategories.includes(value)) {
-          errorResponse(res, 400, `Invalid category value`, value);
-          return;
-        }
-      }
+        case "category":
+          if (value !== null && !allowedCategories.has(value)) {
+            return errorResponse(res, 400, `Invalid category value`, value);
+          }
+          updateData.category = value;
+          break;
 
-      updateData[key] = value;
+        case "model":
+          if (!mongoose.Types.ObjectId.isValid(value)) {
+            return errorResponse(
+              res,
+              400,
+              "Invalid model user ID format",
+              value
+            );
+          }
+          const userExists = await UserModel.exists({ _id: value });
+          if (!userExists) {
+            return errorResponse(res, 400, "Model user not found", value);
+          }
+          updateData.model = value;
+          break;
+
+        case "startDate":
+        case "endDate":
+          const date = new Date(value);
+          if (isNaN(date.getTime())) {
+            return errorResponse(
+              res,
+              400,
+              `Invalid date format for ${key}`,
+              value
+            );
+          }
+          updateData[key] = date;
+          break;
+
+        case "budget":
+          if (typeof value !== "number" || value <= 0) {
+            return errorResponse(
+              res,
+              400,
+              "Budget must be a positive number",
+              value
+            );
+          }
+          updateData.budget = value;
+          break;
+
+        default:
+          updateData[key] = value;
+          break;
+      }
     }
 
     const updatedProject = await ProjectModel.findByIdAndUpdate(
@@ -138,16 +189,16 @@ export const updateProjectById = async (req: Request, res: Response) => {
       .lean();
 
     if (!updatedProject) {
-      errorResponse(res, 404, "Project not found", projectId);
-      return;
+      return errorResponse(res, 404, "Project not found", projectId);
     }
 
-    successResponse(res, 200, {
+    return successResponse(res, 200, {
       message: "Project updated successfully",
       project: updatedProject,
     });
   } catch (err) {
-    errorResponse(res, 500, "Error while updating project", err);
+    console.error(err);
+    return errorResponse(res, 500, "Error while updating project", err);
   }
 };
 

@@ -43,3 +43,11 @@ export type ProjectInfoProps = {
   title: "وضعیت" | "مدل" | "دسته بندی" | "بودجه" | "تاریخ شروع" | "تاریخ پایان";
   value: string | React.ReactNode;
 };
+
+export interface IProjectDropdown {
+  icon: React.ReactNode;
+  label: string;
+  key: string;
+  className?: string;
+  color?: "danger";
+}
