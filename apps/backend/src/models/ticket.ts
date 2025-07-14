@@ -19,7 +19,7 @@ const ticketSchema = new Schema<ITicket>({
   updatedAt: { type: Date, default: Date.now },
   category: {
     type: String,
-    enum: ["مالی", "کاری", "آموزشی", "موارد دیگر"],
+    enum: ["financial", "work", "teach", "other"],
     default: null,
   },
 });

@@ -15,72 +15,56 @@ import {
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
-import { useEffect, useState } from "react";
 
-import { useUser } from "@/hooks/useUser";
-import { useNotificationStore } from "@/stores/notification.store";
+import { useTicketStore } from "@/stores/ticket.store";
 
-const notifSchema = z.object({
+const ticketSchema = z.object({
   title: z.string().min(1, "عنوان الزامی است"),
-  message: z.string().min(1, "متن نوتیفیکیشن الزامی است"),
-  type: z.enum(["personal", "global"], {
-    required_error: "نوع نوتیفیکیشن را انتخاب کنید",
-  }),
-  status: z.enum(["info", "success", "warning", "error"]),
-  recipientIds: z.array(z.string()).optional(),
+  message: z.string().min(1, "متن تیکت الزامی است"),
+  priority: z.enum(["low", "medium", "high", "urgent"]),
+  category: z.string().min(1, "دسته‌بندی الزامی است"),
+  projectId: z.string().min(1, "پروژه را انتخاب کنید"),
 });
 
-type NotificationFormType = z.infer<typeof notifSchema>;
+type TicketFormType = z.infer<typeof ticketSchema>;
 
-interface NewNotificationModalProps {
+interface NewTicketModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  reporterId: string;
+  projects: { _id: string; name: string }[];
 }
 
-export default function NewNotificationModal({
+export default function NewTicketModal({
   isOpen,
   onOpenChange,
-}: NewNotificationModalProps) {
-  const { getAllUsers, users } = useUser();
-  const { createNotification } = useNotificationStore();
-  const [showRecipients, setShowRecipients] = useState(false);
-
-  useEffect(() => {
-    getAllUsers();
-  }, []);
+  reporterId,
+  projects,
+}: NewTicketModalProps) {
+  const { createTicket } = useTicketStore();
 
   const {
     register,
     handleSubmit,
     control,
-    reset,
-    watch,
     formState: { errors },
-  } = useForm<NotificationFormType>({
-    resolver: zodResolver(notifSchema),
+    reset,
+  } = useForm<TicketFormType>({
+    resolver: zodResolver(ticketSchema),
     defaultValues: {
       title: "",
       message: "",
-      type: "personal",
-      status: "info",
-      recipientIds: [],
+      priority: "medium",
+      category: "",
+      projectId: "",
     },
   });
 
-  const type = watch("type");
-
-  useEffect(() => {
-    setShowRecipients(type === "personal");
-  }, [type]);
-
-  const onSubmit = async (data: NotificationFormType) => {
+  const onSubmit = async (data: TicketFormType) => {
     try {
-      await createNotification({
-        title: data.title,
-        message: data.message,
-        type: data.type,
-        status: data.status,
-        recipientIds: data.type === "personal" ? data.recipientIds : [],
+      await createTicket({
+        ...data,
+        reporterId,
       });
 
       reset();
@@ -94,9 +78,7 @@ export default function NewNotificationModal({
     <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
       <ModalContent>
         <>
-          <ModalHeader className="flex flex-col gap-1">
-            نوتیفیکیشن جدید
-          </ModalHeader>
+          <ModalHeader className="flex flex-col gap-1">تیکت جدید</ModalHeader>
           <ModalBody>
             <Form onSubmit={handleSubmit(onSubmit)}>
               <Input
@@ -111,7 +93,7 @@ export default function NewNotificationModal({
 
               <Textarea
                 {...register("message")}
-                label="متن نوتیفیکیشن"
+                label="متن تیکت"
                 size="sm"
                 radius="lg"
                 variant="faded"
@@ -119,75 +101,75 @@ export default function NewNotificationModal({
                 errorMessage={errors.message?.message}
               />
 
-              <div className="flex gap-1 w-full">
+              <div className="flex w-full gap-1">
                 <Controller
-                  name="type"
+                  name="priority"
                   control={control}
                   render={({ field }) => (
                     <Select
-                      label="نوع نوتیفیکیشن"
+                      label="اولویت"
                       radius="lg"
                       variant="faded"
                       selectedKeys={[field.value]}
                       onSelectionChange={(keys) =>
                         field.onChange(Array.from(keys)[0])
                       }
-                      isInvalid={!!errors.type}
-                      errorMessage={errors.type?.message}
+                      isInvalid={!!errors.priority}
+                      errorMessage={errors.priority?.message}
                     >
-                      <SelectItem key="personal">شخصی</SelectItem>
-                      <SelectItem key="global">عمومی</SelectItem>
+                      <SelectItem key="low">کم</SelectItem>
+                      <SelectItem key="medium">متوسط</SelectItem>
+                      <SelectItem key="high">زیاد</SelectItem>
+                      <SelectItem key="urgent">فوری</SelectItem>
                     </Select>
                   )}
                 />
+
                 <Controller
-                  name="status"
+                  name="category"
                   control={control}
                   render={({ field }) => (
                     <Select
-                      label="وضعیت"
+                      label="دسته‌بندی"
                       radius="lg"
                       variant="faded"
                       selectedKeys={[field.value]}
                       onSelectionChange={(keys) =>
                         field.onChange(Array.from(keys)[0])
                       }
-                      isInvalid={!!errors.status}
-                      errorMessage={errors.status?.message}
+                      isInvalid={!!errors.category}
+                      errorMessage={errors.category?.message}
                     >
-                      <SelectItem key="info">اطلاعی</SelectItem>
-                      <SelectItem key="success">موفق</SelectItem>
-                      <SelectItem key="warning">هشدار</SelectItem>
-                      <SelectItem key="error">خطا</SelectItem>
+                      <SelectItem key="financial">مالی</SelectItem>
+                      <SelectItem key="work">کاری</SelectItem>
+                      <SelectItem key="teach">آموزشی</SelectItem>
+                      <SelectItem key="other">متفرقه</SelectItem>
                     </Select>
                   )}
                 />
               </div>
 
-              {showRecipients && (
-                <Controller
-                  name="recipientIds"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      label="گیرندگان"
-                      variant="faded"
-                      selectionMode="multiple"
-                      radius="lg"
-                      selectedKeys={field.value || []}
-                      onSelectionChange={(keys) =>
-                        field.onChange(Array.from(keys))
-                      }
-                      isInvalid={!!errors.recipientIds}
-                      errorMessage={errors.recipientIds?.message}
-                    >
-                      {users.map((user) => (
-                        <SelectItem key={user._id}>{user.fullName}</SelectItem>
-                      ))}
-                    </Select>
-                  )}
-                />
-              )}
+              <Controller
+                name="projectId"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    label="پروژه"
+                    radius="lg"
+                    variant="faded"
+                    selectedKeys={[field.value]}
+                    onSelectionChange={(keys) =>
+                      field.onChange(Array.from(keys)[0])
+                    }
+                    isInvalid={!!errors.projectId}
+                    errorMessage={errors.projectId?.message}
+                  >
+                    {projects.map((p) => (
+                      <SelectItem key={p._id}>{p.name}</SelectItem>
+                    ))}
+                  </Select>
+                )}
+              />
 
               <Button
                 type="submit"
@@ -195,7 +177,7 @@ export default function NewNotificationModal({
                 fullWidth
                 className="bg-Porcelain_White text-Jet_Black mt-4"
               >
-                ارسال نوتیفیکیشن
+                ایجاد تیکت
               </Button>
             </Form>
           </ModalBody>

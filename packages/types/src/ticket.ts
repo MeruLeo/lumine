@@ -8,7 +8,7 @@ export interface ITicket {
   reporterId: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
-  category?: "مالی" | "کاری" | "آموزشی" | "موارد دیگر";
+  category?: "financial" | "work" | "teach" | "other";
   projectId: Types.ObjectId;
 }
 

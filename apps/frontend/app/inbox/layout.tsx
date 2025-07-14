@@ -1,21 +1,21 @@
 "use client";
 
-import { SearchIcon } from "@/components/icons";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { ProjectsSecs } from "@/components/projects/projectsSec";
+import { IProjectsSec } from "@/types/projects";
 import {
-  AllProjectsIcon,
   CheckIcon,
   ClockOrgIcon,
   GroupIcon,
   PlusIcon,
   UserIcon,
-  XIcon,
 } from "@/components/icons/icons";
-import NewNotificationModal from "@/components/inbox/NewTicketModal";
-import NewProjectModal from "@/components/projects/NewProjectModal";
-import { ProjectsSecs } from "@/components/projects/projectsSec";
+import { Button, Tab, Tabs } from "@heroui/react";
 import { useAuth } from "@/hooks/useAuth";
-import { IProjectsSec } from "@/types/projects";
-import { Button, Input, Tab, Tabs } from "@heroui/react";
+import NewNotificationModal from "@/components/inbox/NewNotifModal";
+import NewTicketModal from "@/components/inbox/NewTicketModal";
+import { useProject } from "@/hooks/useProject";
 import { useEffect, useState } from "react";
 
 export default function InboxLayout({
@@ -23,20 +23,19 @@ export default function InboxLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { getMe, user } = useAuth();
-
-  const [btnType, setBtnType] = useState<"ticket" | "notif">("ticket");
+  const pathname = usePathname();
+  const { user, getMe } = useAuth();
+  const { projects, fetchByModelingCode } = useProject();
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     getMe();
+    fetchByModelingCode();
   }, []);
 
-  useEffect(() => {
-    if (!user) return;
-    if (user.role === "model") setBtnType("ticket");
-    else setBtnType("notif");
-  }, [user]);
+  const activeTab = pathname.includes("notifications")
+    ? "notifications"
+    : "tickets";
 
   const ticketsSecArray: IProjectsSec[] = [
     {
@@ -56,6 +55,7 @@ export default function InboxLayout({
       secondColor: "to-yellow-400",
     },
   ];
+
   const notifsSecArray: IProjectsSec[] = [
     {
       name: "شخصی",
@@ -79,43 +79,59 @@ export default function InboxLayout({
     <section className="w-full load-page p-4">
       <div className="flex justify-between items-center">
         <h1 className="text-5xl font-bold">صندوق</h1>
-        <Button
-          radius="full"
-          className={`bg-Slate_Blue`}
-          startContent={<PlusIcon />}
-          size="lg"
-          onPress={() => setIsOpen(true)}
-        >
-          {btnType === "ticket" ? "تیکت جدید" : "اعلامیه جدید"}
-        </Button>
-        <NewNotificationModal isOpen={isOpen} onOpenChange={setIsOpen} />
+
+        {user && (
+          <Button
+            radius="full"
+            className="bg-Slate_Blue"
+            startContent={<PlusIcon />}
+            size="lg"
+            onPress={() => setIsOpen(true)}
+          >
+            {user.role === "admin" ? "اعلامیه جدید" : "تیکت جدید"}
+          </Button>
+        )}
+
+        {user?.role === "admin" && (
+          <NewNotificationModal isOpen={isOpen} onOpenChange={setIsOpen} />
+        )}
+
+        {user?.role === "model" && (
+          <NewTicketModal
+            isOpen={isOpen}
+            onOpenChange={setIsOpen}
+            projects={projects}
+            reporterId={`${user._id}`}
+          />
+        )}
       </div>
-      <Tabs radius="full" size="lg" className="my-8 -mb-4">
-        <Tab title="تیکت ها">
-          <div className="w-full load-page mt-8 gap-4 flex flex-col">
-            <header className="w-full">
-              <ProjectsSecs projectsSecs={ticketsSecArray} />
-            </header>
-            <Input
-              className="w-fit"
-              radius="full"
-              placeholder="جستجو بر اساس نام تیکت"
-              startContent={<SearchIcon />}
-              size="lg"
-              // onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            {children}
-          </div>
-        </Tab>
-        <Tab title="اعلامیه ها">
-          <div className="w-full load-page mt-8 gap-4 flex flex-col">
-            <header className="w-full">
-              <ProjectsSecs projectsSecs={notifsSecArray} />
-            </header>
-            {children}
-          </div>
-        </Tab>
-      </Tabs>
+
+      {/* تب‌هایی که به route لینک دارن */}
+      <div className="my-8">
+        <Tabs radius="full" size="lg" selectedKey={activeTab}>
+          <Tab key="tickets" title="تیکت‌ها" href="/inbox/tickets" />
+          <Tab
+            key="notifications"
+            title="اعلامیه‌ها"
+            href="/inbox/notifications"
+          />
+        </Tabs>
+      </div>
+
+      {/* سکشن بالا برای هر تب */}
+      <div className="mt-8 gap-4 flex flex-col">
+        <header className="w-full">
+          {activeTab === "tickets" && (
+            <ProjectsSecs projectsSecs={ticketsSecArray} />
+          )}
+          {activeTab === "notifications" && (
+            <ProjectsSecs projectsSecs={notifsSecArray} />
+          )}
+        </header>
+
+        {/* محتوای صفحه */}
+        {children}
+      </div>
     </section>
   );
 }

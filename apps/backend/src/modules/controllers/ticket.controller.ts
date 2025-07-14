@@ -34,7 +34,6 @@ export const createTicket = async (req: Request, res: Response) => {
   }
 };
 
-// -------------------- Get All Tickets with Filtering --------------------
 export const getAllTickets = async (req: Request, res: Response) => {
   try {
     const {
