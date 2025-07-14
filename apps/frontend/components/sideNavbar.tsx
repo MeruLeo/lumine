@@ -61,7 +61,7 @@ const MainPage = ({ name, link, icon }: IMainPage) => {
     <li key={name}>
       <Link href={link}>
         <span
-          className={`${isActive ? "bg-Porcelain_White text-Jet_Black" : "bg-Jet_Black_4 text-Ash_Gray"} transition-all duration-200 hover:bg-Jet_Black_3 w-[3.5rem] h-[3.5rem] flex justify-center items-center rounded-full`}
+          className={`${isActive ? "bg-Porcelain_White cursor-default text-Jet_Black" : "bg-Jet_Black_4 text-Ash_Gray"} transition-all duration-200 hover:bg-Jet_Black_3 w-[3.5rem] h-[3.5rem] flex justify-center items-center rounded-full`}
         >
           {icon}
         </span>

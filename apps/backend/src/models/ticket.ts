@@ -22,6 +22,7 @@ const ticketSchema = new Schema<ITicket>({
     enum: ["financial", "work", "teach", "other"],
     default: null,
   },
+  number: { required: true, type: Number, unique: true },
 });
 
 export const TicketModel = model<ITicket>("Ticket", ticketSchema);

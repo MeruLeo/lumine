@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import { TicketModel } from "../../models/ticket";
 import { errorResponse, successResponse } from "../../utils/responses";
 import { TicketReplyModel } from "../../models/ticketReply";
+import { generateUniqueTicketNumber } from "../../utils/ticketNumberGen";
 
 // -------------------- Create Ticket --------------------
 export const createTicket = async (req: Request, res: Response) => {
@@ -15,6 +16,8 @@ export const createTicket = async (req: Request, res: Response) => {
       return errorResponse(res, 400, "Missing required fields");
     }
 
+    const ticketNumber = await generateUniqueTicketNumber();
+
     const newTicket = await TicketModel.create({
       title,
       message,
@@ -23,6 +26,7 @@ export const createTicket = async (req: Request, res: Response) => {
       reporterId,
       category,
       projectId,
+      number: ticketNumber,
     });
 
     successResponse(res, 201, {

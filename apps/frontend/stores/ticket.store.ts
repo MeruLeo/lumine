@@ -18,7 +18,8 @@ export interface Ticket {
     role: string;
   };
   category: string;
-  projectId: string;
+  projectId?: string;
+  number: number;
   createdAt: string;
   updatedAt: string;
 }

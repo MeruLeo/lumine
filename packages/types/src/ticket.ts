@@ -9,7 +9,8 @@ export interface ITicket {
   createdAt: Date;
   updatedAt: Date;
   category?: "financial" | "work" | "teach" | "other";
-  projectId: Types.ObjectId;
+  projectId?: Types.ObjectId;
+  number: number;
 }
 
 export interface ITicketReply {
