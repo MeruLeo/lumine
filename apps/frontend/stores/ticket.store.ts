@@ -5,6 +5,7 @@ import API from "@/lib/axios";
 
 export type TicketStatus = "open" | "in_progress" | "resolved" | "closed";
 export type TicketPriority = "low" | "medium" | "high" | "urgent";
+export type TicketCategory = "financial" | "work" | "teach" | "other";
 
 export interface Ticket {
   _id: string;
@@ -17,10 +18,10 @@ export interface Ticket {
     fullName: string;
     role: string;
   };
-  category: string;
+  category: TicketCategory;
   projectId?: string;
   number: number;
-  createdAt: string;
+  createdAt: string | Date;
   updatedAt: string;
 }
 
@@ -65,7 +66,7 @@ interface TicketStore {
   createTicket: (data: Partial<Ticket>) => Promise<void>;
   updateTicket: (id: string, data: Partial<Ticket>) => Promise<void>;
   deleteTicket: (id: string) => Promise<void>;
-  getTicketsByReporter: (reporterId: string) => Promise<void>;
+  getTicketsByReporter: (reporterId: string | undefined) => Promise<void>;
 
   replyToTicket: (
     ticketId: string,
@@ -91,8 +92,8 @@ export const useTicketStore = create<TicketStore>()(
         const res = await API.get("/tickets", { params: filters });
 
         set({
-          tickets: res.data.tickets,
-          pagination: res.data.pagination,
+          tickets: res.data.data.tickets,
+          pagination: res.data.data.pagination,
         });
       } catch (err: any) {
         set({ error: err.response?.data?.message || "Error fetching tickets" });
@@ -118,9 +119,11 @@ export const useTicketStore = create<TicketStore>()(
       try {
         set({ loading: true, error: null });
         const res = await API.post("/tickets", data);
+        const newTicket = res.data.ticket;
 
         set((state) => ({
-          tickets: [res.data.ticket, ...state.tickets],
+          tickets: [newTicket, ...state.tickets],
+          error: null,
         }));
       } catch (err: any) {
         set({ error: err.response?.data?.message || "Error creating ticket" });
@@ -165,7 +168,7 @@ export const useTicketStore = create<TicketStore>()(
         set({ loading: true, error: null });
         const res = await API.get(`/tickets/reporter/${reporterId}`);
 
-        set({ tickets: res.data.tickets });
+        set({ tickets: res.data.data.tickets });
       } catch (err: any) {
         set({
           error:

@@ -43,7 +43,6 @@ router.delete(
 router.get(
   "/reporter/:reporterId",
   authenticate,
-  verifyDeveloperOrAdmin,
   asyncHandler(getTicketsByReporter)
 );
 router.post(

@@ -13,7 +13,7 @@ import React from "react";
 type TicketPreviweProps = {
   title: string;
   status: "open" | "in_progress" | "resolved" | "closed";
-  createdAt: Date;
+  createdAt: string | Date;
   category: "financial" | "work" | "teach" | "other";
   number: number;
 };
@@ -32,8 +32,8 @@ const TicketPreviewDetail = ({
   value,
 }: TicketPreviewDetailProps) => {
   return (
-    <li className="gradient-border bg-Jet_Black p-2 rounded-3xl h-20 flex flex-col justify-between w-32">
-      <span className={`text-xl font-bold ${className}`}>{value}</span>
+    <li className="gradient-border bg-Jet_Black p-2 rounded-3xl h-20 flex flex-col justify-between w-full">
+      <span className={`text-lg font-bold ${className}`}>{value}</span>
       <Divider />
       <div className="flex text-sm text-Ash_Gray justify-between">
         <p>{title}</p>
@@ -51,7 +51,7 @@ export const TicketPreviwe = ({
   number,
 }: TicketPreviweProps) => {
   return (
-    <li className="bg-Jet_Black_4 gradient-border_bottom w-fit flex flex-col gap-4 p-4 rounded-[2rem]">
+    <li className="bg-Jet_Black_4  w-[30rem] flex flex-col gap-4 p-4 rounded-[2rem]">
       <header className="flex justify-between items-center">
         <Link
           href={`${number}`}
@@ -67,11 +67,11 @@ export const TicketPreviwe = ({
           جزئیات
         </Button>
       </header>
-      {/* <Divider /> */}
+      <Divider />
       <main className="flex gap-4">
         <TicketPreviewDetail
           icon={<FolderIcon />}
-          title="شماره تیکت"
+          title="شماره"
           value={number}
         />
         <TicketPreviewDetail
