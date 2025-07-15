@@ -16,6 +16,7 @@ export const useTicket = () => {
     getTicketById,
     getTicketsByReporter,
     replyToTicket,
+    getTicketByNumber,
     updateTicket,
   } = useTicketStore();
 
@@ -33,6 +34,7 @@ export const useTicket = () => {
     getRepliesByTicket,
     getTicketById,
     getTicketsByReporter,
+    getTicketByNumber,
     replyToTicket,
     updateTicket,
   };

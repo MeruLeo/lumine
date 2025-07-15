@@ -23,7 +23,7 @@ const ticketSchema = z.object({
   message: z.string().min(1, "متن تیکت الزامی است"),
   priority: z.enum(["low", "medium", "high", "urgent"]),
   category: z.string().min(1, "دسته‌بندی الزامی است"),
-  projectId: z.string().min(1, "پروژه را انتخاب کنید"),
+  projectId: z.union([z.string().min(1), z.literal("")]).optional(),
 });
 
 type TicketFormType = z.infer<typeof ticketSchema>;
@@ -61,12 +61,17 @@ export default function NewTicketModal({
   });
 
   const onSubmit = async (data: TicketFormType) => {
-    try {
-      await createTicket({
-        ...data,
-        reporterId,
-      });
+    const payload = {
+      ...data,
+      reporterId,
+    };
 
+    if (!data.projectId) {
+      delete payload.projectId;
+    }
+
+    try {
+      await createTicket(payload);
       reset();
       onOpenChange(false);
     } catch (err) {
@@ -164,6 +169,7 @@ export default function NewTicketModal({
                     isInvalid={!!errors.projectId}
                     errorMessage={errors.projectId?.message}
                   >
+                    {/* <SelectItem key="">بدون پروژه</SelectItem> */}
                     {projects.map((p) => (
                       <SelectItem key={p._id}>{p.name}</SelectItem>
                     ))}

@@ -67,6 +67,7 @@ interface TicketStore {
   updateTicket: (id: string, data: Partial<Ticket>) => Promise<void>;
   deleteTicket: (id: string) => Promise<void>;
   getTicketsByReporter: (reporterId: string | undefined) => Promise<void>;
+  getTicketByNumber: (number: number) => Promise<void>;
 
   replyToTicket: (
     ticketId: string,
@@ -201,6 +202,19 @@ export const useTicketStore = create<TicketStore>()(
         set({ replies: res.data.replies });
       } catch (err: any) {
         set({ error: err.response?.data?.message || "Error fetching replies" });
+      } finally {
+        set({ loading: false });
+      }
+    },
+
+    getTicketByNumber: async (number: number) => {
+      try {
+        set({ loading: true, error: null });
+        const res = await API.get(`/tickets/number/${number}`);
+
+        set({ selectedTicket: res.data.ticket });
+      } catch (err: any) {
+        set({ error: err.response?.data?.message || "Error fetching ticket" });
       } finally {
         set({ loading: false });
       }

@@ -35,14 +35,14 @@ export default function TicketsPage() {
                 key={ticket._id}
                 category={ticket.category}
                 createdAt={<PersianDate createdAt={ticket.createdAt} />}
-                number={<PersianNumber number={`${ticket.number}`} />}
+                number={ticket.number}
                 status={ticket.status}
                 title={ticket.title}
               />
             ) : null,
           )
         ) : (
-          <p className="text-center my-32 flex flex-col justify-center items-center text-Ash_Gray text-lg mt-8">
+          <p className="text-center w-full my-32 flex flex-col justify-center items-center text-Ash_Gray text-lg mt-8">
             <InboxIcon />
             اینجا خبری نیست
           </p>

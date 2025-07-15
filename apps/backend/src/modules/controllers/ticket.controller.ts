@@ -12,7 +12,7 @@ export const createTicket = async (req: Request, res: Response) => {
     const { title, message, priority, reporterId, category, projectId } =
       req.body;
 
-    if (!title || !message || !priority || !reporterId || !projectId) {
+    if (!title || !message || !priority || !reporterId) {
       return errorResponse(res, 400, "Missing required fields");
     }
 
@@ -223,5 +223,23 @@ export const getRepliesByTicket = async (req: Request, res: Response) => {
     successResponse(res, 200, { replies });
   } catch (err) {
     errorResponse(res, 500, "Failed to get replies", err);
+  }
+};
+
+export const getTicketByNumber = async (req: Request, res: Response) => {
+  try {
+    const { number } = req.params;
+    const ticket = await TicketModel.findOne({ number }).populate(
+      "reporterId",
+      "fullName"
+    );
+
+    if (!ticket) {
+      return res.status(404).json({ message: "Ticket not found" });
+    }
+
+    res.status(200).json({ ticket });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err });
   }
 };

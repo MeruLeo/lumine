@@ -5,10 +5,12 @@ import {
   StatusIcon,
   TagIcon,
 } from "@/components/icons/icons";
+import PersianNumber from "@/utils/convertToPersianNumber";
 import { ArrowLeftCircleIcon } from "@heroicons/react/20/solid";
 import { Link } from "@heroui/link";
 import { Button, Divider } from "@heroui/react";
-import React from "react";
+import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
 
 type TicketPreviweProps = {
   title: string;
@@ -33,7 +35,10 @@ const TicketPreviewDetail = ({
 }: TicketPreviewDetailProps) => {
   return (
     <li className="gradient-border bg-Jet_Black p-2 rounded-3xl h-20 flex flex-col justify-between w-full">
-      <span className={`text-lg font-bold ${className}`}>{value}</span>
+      <span className={`text-lg font-bold ${className}`}>
+        {title === "شماره" ? <PersianNumber number={value} /> : value}
+      </span>
+
       <Divider />
       <div className="flex text-sm text-Ash_Gray justify-between">
         <p>{title}</p>
@@ -50,16 +55,19 @@ export const TicketPreviwe = ({
   category,
   number,
 }: TicketPreviweProps) => {
+  const router = useRouter();
+
   return (
     <li className="bg-Jet_Black_4  w-[30rem] flex flex-col gap-4 p-4 rounded-[2rem]">
       <header className="flex justify-between items-center">
         <Link
-          href={`${number}`}
+          href={`/inbox/tickets/${number}`}
           className="text-3xl text-Porcelain_White font-bold"
         >
           {title}
         </Link>
         <Button
+          onPress={() => router.push(`/inbox/tickets/${number}`)}
           endContent={<ArrowLeftIcon />}
           radius="full"
           className="bg-Porcelain_White text-Jet_Black"

@@ -23,6 +23,7 @@ const ticketSchema = new Schema<ITicket>({
     default: null,
   },
   number: { required: true, type: Number, unique: true },
+  projectId: { required: false, type: Schema.Types.ObjectId, ref: "Project" },
 });
 
 export const TicketModel = model<ITicket>("Ticket", ticketSchema);

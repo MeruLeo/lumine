@@ -8,6 +8,7 @@ import {
   getTicketsByReporter,
   replyToTicket,
   getRepliesByTicket,
+  getTicketByNumber,
 } from "../controllers/ticket.controller";
 import { authenticate } from "../../middlewares/auth.middleware";
 import { verifyDeveloperOrAdmin } from "../../middlewares/user.isAdmin";
@@ -45,17 +46,12 @@ router.get(
   authenticate,
   asyncHandler(getTicketsByReporter)
 );
-router.post(
-  "/:ticketId/reply",
-  authenticate,
-  verifyDeveloperOrAdmin,
-  asyncHandler(replyToTicket)
-);
+router.post("/:ticketId/reply", authenticate, asyncHandler(replyToTicket));
 router.get(
   "/:ticketId/replies",
   authenticate,
-  verifyDeveloperOrAdmin,
   asyncHandler(getRepliesByTicket)
 );
+router.get("/number/:number", authenticate, asyncHandler(getTicketByNumber));
 
 export default router;
