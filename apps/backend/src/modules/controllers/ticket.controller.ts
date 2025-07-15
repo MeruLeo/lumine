@@ -175,7 +175,9 @@ export const getTicketsByReporter = async (req: Request, res: Response) => {
       return errorResponse(res, 400, "Invalid reporter ID format");
     }
 
-    const tickets = await TicketModel.find({ reporterId }).lean();
+    const tickets = await TicketModel.find({ reporterId })
+      .lean()
+      .sort({ createdAt: -1 });
 
     successResponse(res, 200, { tickets });
   } catch (err) {
