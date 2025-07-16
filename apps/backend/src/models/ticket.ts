@@ -6,7 +6,7 @@ const ticketSchema = new Schema<ITicket>({
   message: { type: String, required: true },
   status: {
     type: String,
-    enum: ["open", "in_progress", "resolved", "closed"],
+    enum: ["open", "in_progress", "closed"],
     default: "open",
   },
   priority: {

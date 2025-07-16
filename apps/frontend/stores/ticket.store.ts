@@ -183,7 +183,7 @@ export const useTicketStore = create<TicketStore>()(
     replyToTicket: async (ticketId, data) => {
       try {
         set({ loading: true, error: null });
-        await API.post(`/tickets/${ticketId}/replies`, data);
+        await API.post(`/tickets/${ticketId}/reply`, data);
         await get().getRepliesByTicket(ticketId);
       } catch (err: any) {
         set({
@@ -199,7 +199,7 @@ export const useTicketStore = create<TicketStore>()(
         set({ loading: true, error: null });
         const res = await API.get(`/tickets/${ticketId}/replies`);
 
-        set({ replies: res.data.replies });
+        set({ replies: res.data.data.replies });
       } catch (err: any) {
         set({ error: err.response?.data?.message || "Error fetching replies" });
       } finally {

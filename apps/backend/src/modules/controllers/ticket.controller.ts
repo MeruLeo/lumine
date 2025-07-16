@@ -113,7 +113,7 @@ export const updateTicketById = async (req: Request, res: Response) => {
       return errorResponse(res, 400, "Invalid ticket ID format");
     }
 
-    const allowedStatuses = ["open", "in_progress", "resolved", "closed"];
+    const allowedStatuses = ["open", "in_progress", "closed"];
     const allowedPriorities = ["low", "medium", "high", "urgent"];
 
     const updateData: Record<string, any> = {};

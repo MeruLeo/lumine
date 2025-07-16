@@ -7,13 +7,15 @@ import { BackIcon } from "@/components/icons/icons";
 
 // import { ProjectDropdown } from "./projectDropdown";
 import { UserType } from "@/types/users";
+import React from "react";
+import { TicketDropdown } from "./ticketDropdown";
 
 interface TicketHeaderProps {
-  title: string;
-  //   role: "model" | "admin" | "developer";
+  title: React.ReactNode;
+  role: "model" | "admin" | "developer";
 }
 
-export const TicketHeader = ({ title }: TicketHeaderProps) => {
+export const TicketHeader = ({ title, role }: TicketHeaderProps) => {
   const router = useRouter();
 
   return (
@@ -29,10 +31,10 @@ export const TicketHeader = ({ title }: TicketHeaderProps) => {
       </Button>
 
       <div className="w-[15rem] bg-Jet_Black_4 p-3 text-center text-3xl font-bold rounded-full">
-        {title}
+        #{title}
       </div>
 
-      {/* <ProjectDropdown role={role} /> */}
+      <TicketDropdown role={role} />
     </header>
   );
 };

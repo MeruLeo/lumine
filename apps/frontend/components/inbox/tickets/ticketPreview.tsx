@@ -57,14 +57,22 @@ export const TicketPreviwe = ({
 }: TicketPreviweProps) => {
   const router = useRouter();
 
+  const statusMap = {
+    open: "باز",
+    in_progress: "درحال بررسی",
+    closed: "بسته شده",
+  } as const;
+
+  const statusLabel = statusMap[status as keyof typeof statusMap] ?? "نامشخص";
+
   return (
-    <li className="bg-Jet_Black_4  w-[30rem] flex flex-col gap-4 p-4 rounded-[2rem]">
+    <li className="bg-Jet_Black_4  w-[35rem] flex flex-col gap-4 p-4 rounded-[2rem]">
       <header className="flex justify-between items-center">
         <Link
           href={`/inbox/tickets/${number}`}
           className="text-3xl text-Porcelain_White font-bold"
         >
-          {title}
+          {title.length > 25 ? `${title.slice(0, 20)} ...` : title}
         </Link>
         <Button
           onPress={() => router.push(`/inbox/tickets/${number}`)}
@@ -95,7 +103,7 @@ export const TicketPreviwe = ({
         <TicketPreviewDetail
           icon={<StatusIcon />}
           title="وضعیت"
-          value={status}
+          value={statusLabel}
         />
       </main>
     </li>
