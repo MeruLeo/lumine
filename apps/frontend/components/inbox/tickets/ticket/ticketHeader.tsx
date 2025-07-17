@@ -12,7 +12,7 @@ import { TicketDropdown } from "./ticketDropdown";
 
 interface TicketHeaderProps {
   title: React.ReactNode;
-  role: "model" | "admin" | "developer";
+  role: "model" | "admin" | "developer" | undefined;
 }
 
 export const TicketHeader = ({ title, role }: TicketHeaderProps) => {

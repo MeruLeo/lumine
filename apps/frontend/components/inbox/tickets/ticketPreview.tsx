@@ -62,8 +62,16 @@ export const TicketPreviwe = ({
     in_progress: "درحال بررسی",
     closed: "بسته شده",
   } as const;
+  const categoryMap = {
+    financial: "مالی",
+    work: "کاری",
+    teach: "آموزشی",
+    other: "متفرقه",
+  } as const;
 
   const statusLabel = statusMap[status as keyof typeof statusMap] ?? "نامشخص";
+  const categoryLabel =
+    categoryMap[category as keyof typeof categoryMap] ?? "نامشخص";
 
   return (
     <li className="bg-Jet_Black_4  w-[35rem] flex flex-col gap-4 p-4 rounded-[2rem]">
@@ -93,7 +101,7 @@ export const TicketPreviwe = ({
         <TicketPreviewDetail
           icon={<TagIcon />}
           title="دسته بندی"
-          value={category}
+          value={categoryLabel}
         />
         <TicketPreviewDetail
           icon={<StartDateIcon />}

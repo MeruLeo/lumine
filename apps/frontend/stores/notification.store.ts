@@ -6,14 +6,20 @@ import API from "@/lib/axios";
 export type NotificationType = "personal" | "global";
 export type NotificationStatus = "info" | "success" | "error" | "warning";
 
+export interface UserNotification {
+  _id: string;
+  fullName: string;
+  modelingCode: string;
+}
+
 export interface Notification {
   _id: string;
   title: string;
   message: string;
   type: NotificationType;
   status: NotificationStatus;
-  recipients: string[];
-  seenBy: string[];
+  recipients: UserNotification[];
+  seenBy: UserNotification[];
   createdAt: string;
 }
 
@@ -33,6 +39,8 @@ interface NotificationStore {
     recipientIds?: string[];
   }) => Promise<void>;
   deleteNotification: (id: string) => Promise<void>;
+  getUserNotifications: () => Promise<void>;
+  getAllNotificationsForAdmin: () => Promise<void>;
   markAsRead: (id: string) => Promise<void>;
   clearSelected: () => void;
 }
@@ -106,6 +114,7 @@ export const useNotificationStore = create<NotificationStore>()(
     deleteNotification: async (id: string) => {
       try {
         set({ loading: true, error: null });
+        console.log(id);
         await API.delete(`/notifs/${id}`);
         set((state) => ({
           notifications: state.notifications.filter((n) => n._id !== id),
@@ -133,6 +142,39 @@ export const useNotificationStore = create<NotificationStore>()(
         }));
       } catch (err: any) {
         set({ error: err.response?.data?.message || "Failed to mark as read" });
+      }
+    },
+
+    getUserNotifications: async () => {
+      try {
+        set({ loading: true, error: null });
+        const res = await API.get("/notifs");
+
+        set({ notifications: res.data.notifications });
+      } catch (err: any) {
+        set({
+          error:
+            err.response?.data?.message || "Failed to fetch user notifications",
+        });
+      } finally {
+        set({ loading: false });
+      }
+    },
+
+    getAllNotificationsForAdmin: async () => {
+      try {
+        set({ loading: true, error: null });
+        const res = await API.get("/notifs/admin");
+
+        set({ notifications: res.data.notifications });
+      } catch (err: any) {
+        set({
+          error:
+            err.response?.data?.message ||
+            "Failed to fetch admin notifications",
+        });
+      } finally {
+        set({ loading: false });
       }
     },
 

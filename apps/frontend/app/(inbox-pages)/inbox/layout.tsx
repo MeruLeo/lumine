@@ -33,9 +33,7 @@ export default function InboxLayout({
     fetchByModelingCode();
   }, []);
 
-  const activeTab = pathname.includes("notifications")
-    ? "notifications"
-    : "tickets";
+  const activeTab = pathname.includes("tickets") ? "tickets" : "inbox";
 
   const ticketsSecArray: IProjectsSec[] = [
     {
@@ -109,12 +107,8 @@ export default function InboxLayout({
       {/* تب‌هایی که به route لینک دارن */}
       <div className="my-8">
         <Tabs radius="full" size="lg" selectedKey={activeTab}>
+          <Tab key="inbox" title="اعلامیه‌ها" href="/inbox" />
           <Tab key="tickets" title="تیکت‌ها" href="/inbox/tickets" />
-          <Tab
-            key="notifications"
-            title="اعلامیه‌ها"
-            href="/inbox/notifications"
-          />
         </Tabs>
       </div>
 
@@ -124,7 +118,7 @@ export default function InboxLayout({
           {activeTab === "tickets" && (
             <ProjectsSecs projectsSecs={ticketsSecArray} />
           )}
-          {activeTab === "notifications" && (
+          {activeTab === "inbox" && (
             <ProjectsSecs projectsSecs={notifsSecArray} />
           )}
         </header>

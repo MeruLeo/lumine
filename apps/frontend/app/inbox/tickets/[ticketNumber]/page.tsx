@@ -75,15 +75,42 @@ export default function TicketDetailPage() {
 
   if (!selectedTicket) return <div className="p-6">تیکتی یافت نشد.</div>;
 
+  const statusColors: Record<string, { bg: string; text: string }> = {
+    open: {
+      bg: "bg-yellow-800/30",
+      text: "text-yellow-400",
+    },
+    in_progress: {
+      bg: "bg-blue-800/30",
+      text: "text-blue-400",
+    },
+    closed: {
+      bg: "bg-red-800/30",
+      text: "text-red-400",
+    },
+  };
+
   const statusMap = {
     open: "باز",
     in_progress: "درحال بررسی",
     closed: "بسته شده",
   } as const;
-
-  const getStatusInfo = (status) => {};
-
+  const status = selectedTicket.status;
   const statusLabel = statusMap[status as keyof typeof statusMap] ?? "نامشخص";
+  const statusStyle = statusColors[status] || {
+    bg: "bg-gray-700",
+    text: "text-gray-300",
+  };
+
+  const categoryMap = {
+    financial: "مالی",
+    work: "کاری",
+    teach: "آموزشی",
+    other: "متفرقه",
+  } as const;
+  const categoryLabel =
+    categoryMap[selectedTicket.category as keyof typeof categoryMap] ??
+    "نامشخص";
 
   return (
     <div className="load-page">
@@ -102,7 +129,15 @@ export default function TicketDetailPage() {
               شماره تیکت: <PersianNumber number={selectedTicket.number} />
             </div>
             <div className="bg-Jet_Black_2 w-fit p-2 rounded-full">
-              وضعیت: <span className="font-semibold">{statusLabel}</span>
+              دسته بندی: {categoryLabel}
+            </div>
+            <div
+              className={`bg-Jet_Black_2 w-fit p-2 rounded-full ${statusStyle.bg}`}
+            >
+              وضعیت:{" "}
+              <span className={`font-semibold ${statusStyle.text}`}>
+                {statusLabel}
+              </span>
             </div>
           </div>
 
