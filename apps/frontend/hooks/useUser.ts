@@ -15,6 +15,7 @@ export const useUser = () => {
     getMe,
     getUserById,
     updateUserById,
+    changeUserStatus,
     verifyUser,
   } = useUserStore();
 
@@ -32,6 +33,7 @@ export const useUser = () => {
     getMe,
     getUserById,
     updateUserById,
+    changeUserStatus,
     verifyUser,
   };
 };

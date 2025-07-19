@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  changeUserStatus,
   createUser,
   deleteUserById,
   getAllUsers,
@@ -17,6 +18,12 @@ router
   .route("/")
   .get(authenticate, verifyDeveloperOrAdmin, getAllUsers)
   .post(authenticate, verifyDeveloperOrAdmin, createUser);
+router.put(
+  "/status/:userId",
+  authenticate,
+  verifyDeveloperOrAdmin,
+  changeUserStatus
+);
 router
   .route("/:userId")
   .get(authenticate, verifyDeveloperOrAdmin, getUserById)

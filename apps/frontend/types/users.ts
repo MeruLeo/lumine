@@ -1,13 +1,24 @@
 export interface UserType {
   _id: string;
   fullName: string;
+  role: "admin" | "model" | "developer";
+  age: number;
+  password: string;
+  modelingCode?: string;
+  gender: "M" | "F";
+  national: "P" | "N";
+  nationalCode: string;
+  verifyPhone: boolean;
+  married: "S" | "M";
+  naturalStat: "N" | "A";
+  status: "pending" | "accepted" | "rejected";
+  CosmeticSurgeryExplain: string;
+  level: "B" | "I" | "P";
+  height: number;
+  weight: number;
+  phone: string;
   email: string;
-  phone?: string;
-  age?: number;
-  role: "model" | "admin" | "developer";
-  height?: number;
-  weight?: number;
-  naturalStat?: string;
-  verify?: boolean;
-  createdAt?: string;
+  refreshToken: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

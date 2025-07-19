@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 import axios from "@/lib/axios";
 import { UserType } from "@/types/users";
+import API from "@/lib/axios";
 
 interface UserStore {
   users: UserType[];
@@ -15,6 +16,10 @@ interface UserStore {
   getMe: () => Promise<void>;
   createUser: (data: Partial<UserType>) => Promise<void>;
   updateUserById: (id: string, data: Partial<UserType>) => Promise<void>;
+  changeUserStatus: (
+    userId: string,
+    status: "pending" | "accepted" | "rejected",
+  ) => Promise<void>;
   deleteUserById: (id: string) => Promise<void>;
   verifyUser: (id: string) => Promise<void>;
 
@@ -35,7 +40,7 @@ export const useUserStore = create<UserStore>((set) => ({
   getAllUsers: async () => {
     try {
       set({ loading: true, error: null });
-      const res = await axios.get("/users");
+      const res = await API.get("/users");
 
       set({ users: res.data.data.users });
     } catch (err: any) {
@@ -48,7 +53,7 @@ export const useUserStore = create<UserStore>((set) => ({
   getUserById: async (id: string) => {
     try {
       set({ loading: true, error: null });
-      const res = await axios.get(`/v1/users/${id}`);
+      const res = await API.get(`/users/${id}`);
       set({ selectedUser: res.data });
     } catch (err: any) {
       set({ error: err.response?.data?.message || "کاربر پیدا نشد" });
@@ -60,7 +65,7 @@ export const useUserStore = create<UserStore>((set) => ({
   getMe: async () => {
     try {
       set({ loading: true, error: null });
-      const res = await axios.get("/v1/users/me");
+      const res = await API.get("/users/me");
       set({ me: res.data.user });
     } catch (err: any) {
       set({ error: err.response?.data?.message || "احراز هویت انجام نشد" });
@@ -72,7 +77,7 @@ export const useUserStore = create<UserStore>((set) => ({
   createUser: async (data) => {
     try {
       set({ loading: true, error: null });
-      const res = await axios.post("/v1/users", data);
+      const res = await API.post("/users", data);
       set((state) => ({ users: [...state.users, res.data.newUser] }));
     } catch (err: any) {
       set({ error: err.response?.data?.message || "خطا در ساخت کاربر" });
@@ -84,7 +89,8 @@ export const useUserStore = create<UserStore>((set) => ({
   updateUserById: async (id, data) => {
     try {
       set({ loading: true, error: null });
-      const res = await axios.patch(`/v1/users/${id}`, data);
+      const res = await API.put(`/users/${id}`, data);
+
       set((state) => ({
         users: state.users.map((user) =>
           user._id === id ? res.data.updatedUser : user,
@@ -98,10 +104,31 @@ export const useUserStore = create<UserStore>((set) => ({
     }
   },
 
+  changeUserStatus: async (userId, status) => {
+    try {
+      set({ loading: true, error: null });
+      const res = await API.put(`/users/status/${userId}`, { status });
+
+      set((state) => ({
+        users: state.users.map((user) =>
+          user._id === userId ? { ...user, status: res.data.status } : user,
+        ),
+        selectedUser:
+          state.selectedUser && state.selectedUser._id === userId
+            ? { ...state.selectedUser, status: res.data.status }
+            : state.selectedUser,
+      }));
+    } catch (err: any) {
+      set({ error: err.response?.data?.message || "خطا در تغییر وضعیت کاربر" });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
   deleteUserById: async (id) => {
     try {
       set({ loading: true, error: null });
-      await axios.delete(`/v1/users/${id}`);
+      await API.delete(`/users/${id}`);
       set((state) => ({
         users: state.users.filter((user) => user._id !== id),
       }));
@@ -115,7 +142,7 @@ export const useUserStore = create<UserStore>((set) => ({
   verifyUser: async (id) => {
     try {
       set({ loading: true, error: null });
-      const res = await axios.patch(`/v1/users/verify/${id}`);
+      const res = await API.patch(`/users/verify/${id}`);
       set((state) => ({
         users: state.users.map((user) =>
           user._id === id ? res.data.user : user,

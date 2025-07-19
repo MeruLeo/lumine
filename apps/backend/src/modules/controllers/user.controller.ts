@@ -191,3 +191,41 @@ export const getMe = async (req: Request, res: Response) => {
     errorResponse(res, 500, "Error while fetching user information", err);
   }
 };
+
+// Controller to change user status
+export const changeUserStatus = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const { status } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      errorResponse(res, 400, "Invalid user ID format", userId);
+      return;
+    }
+
+    // Only allow valid status values
+    const allowedStatus = ["pending", "accepted", "rejected"];
+    if (!allowedStatus.includes(status)) {
+      errorResponse(res, 400, "Invalid status value", status);
+      return;
+    }
+
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      { status },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      errorResponse(res, 404, "User not found", userId);
+      return;
+    }
+
+    successResponse(res, 200, {
+      message: "User status updated successfully",
+      updatedUser,
+    });
+  } catch (err) {
+    errorResponse(res, 500, "Error while updating user status", err);
+  }
+};
