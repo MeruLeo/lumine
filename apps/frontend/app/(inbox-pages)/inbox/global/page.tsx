@@ -5,15 +5,11 @@ import { useNotificationStore } from "@/stores/notification.store";
 import { Notification } from "@/components/inbox/notification/Notification";
 import { useAuth } from "@/hooks/useAuth";
 import { InboxIcon } from "@/components/icons/icons";
+import { useNotification } from "@/hooks/useNotif";
 
-export default function InboxPage() {
-  const {
-    notifications,
-    getAllNotificationsForAdmin,
-    getUserNotifications,
-    loading,
-    error,
-  } = useNotificationStore();
+export default function InboxGlobalPage() {
+  const { notifications, getGlobalNotifications, loading, error } =
+    useNotification();
   const { getMe, user } = useAuth();
 
   useEffect(() => {
@@ -22,8 +18,7 @@ export default function InboxPage() {
 
   useEffect(() => {
     if (!user) return;
-    if (user.role === "model") getUserNotifications();
-    else getAllNotificationsForAdmin();
+    getGlobalNotifications();
   }, [user]);
 
   return (

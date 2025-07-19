@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
 import API from "@/lib/axios";
+import { useAuth } from "@/hooks/useAuth";
 
 export type NotificationType = "personal" | "global";
 export type NotificationStatus = "info" | "success" | "error" | "warning";
@@ -42,6 +43,8 @@ interface NotificationStore {
   getUserNotifications: () => Promise<void>;
   getAllNotificationsForAdmin: () => Promise<void>;
   markAsRead: (id: string) => Promise<void>;
+  getPersonalNotifications: () => Promise<void>;
+  getGlobalNotifications: () => Promise<void>;
   clearSelected: () => void;
 }
 
@@ -131,15 +134,7 @@ export const useNotificationStore = create<NotificationStore>()(
     markAsRead: async (id: string) => {
       try {
         await API.patch(`/notifs/${id}/read`);
-        const userId = "CURRENT_USER_ID";
-
-        set((state) => ({
-          notifications: state.notifications.map((n) =>
-            n._id === id && !n.seenBy.includes(userId)
-              ? { ...n, seenBy: [...n.seenBy, userId] }
-              : n,
-          ),
-        }));
+        await useNotificationStore.getState().getUserNotifications();
       } catch (err: any) {
         set({ error: err.response?.data?.message || "Failed to mark as read" });
       }
@@ -178,6 +173,39 @@ export const useNotificationStore = create<NotificationStore>()(
       }
     },
 
+    getPersonalNotifications: async () => {
+      try {
+        set({ loading: true, error: null });
+        const res = await API.get("/notifs/personal");
+
+        set({ notifications: res.data.notifications });
+      } catch (err: any) {
+        set({
+          error:
+            err.response?.data?.message ||
+            "Failed to fetch personal notifications",
+        });
+      } finally {
+        set({ loading: false });
+      }
+    },
+
+    getGlobalNotifications: async () => {
+      try {
+        set({ loading: true, error: null });
+        const res = await API.get("/notifs/global");
+
+        set({ notifications: res.data.notifications });
+      } catch (err: any) {
+        set({
+          error:
+            err.response?.data?.message ||
+            "Failed to fetch global notifications",
+        });
+      } finally {
+        set({ loading: false });
+      }
+    },
     clearSelected: () => set({ selectedNotification: null }),
   })),
 );

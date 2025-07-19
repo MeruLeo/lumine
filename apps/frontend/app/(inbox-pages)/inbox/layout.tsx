@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { ProjectsSecs } from "@/components/projects/projectsSec";
 import { IProjectsSec } from "@/types/projects";
 import {
+  AllProjectsIcon,
   CheckIcon,
   ClockOrgIcon,
   GroupIcon,
@@ -37,9 +38,17 @@ export default function InboxLayout({
 
   const ticketsSecArray: IProjectsSec[] = [
     {
+      name: "همه",
+      icon: <AllProjectsIcon />,
+      link: "/inbox/tickets",
+      color: "from-yellow-800",
+      secondColor: "to-green-300",
+      count: 0,
+    },
+    {
       name: "در انتظار پاسخ",
       icon: <ClockOrgIcon />,
-      link: "/projects",
+      link: "/inbox/tickets/open",
       color: "from-blue-800",
       secondColor: "to-green-400",
       count: 0,
@@ -47,7 +56,7 @@ export default function InboxLayout({
     {
       name: "پاسخ داده",
       icon: <CheckIcon />,
-      link: "/projects/completed",
+      link: "/inbox/tickets/in-progress",
       color: "from-green-700",
       count: 0,
       secondColor: "to-yellow-400",
@@ -56,9 +65,17 @@ export default function InboxLayout({
 
   const notifsSecArray: IProjectsSec[] = [
     {
+      name: "همه",
+      icon: <AllProjectsIcon />,
+      link: "/inbox",
+      color: "from-yellow-800",
+      secondColor: "to-green-300",
+      count: 0,
+    },
+    {
       name: "شخصی",
       icon: <UserIcon />,
-      link: "/projects",
+      link: "/inbox/personal",
       color: "from-red-800",
       secondColor: "to-blue-300",
       count: 0,
@@ -66,7 +83,7 @@ export default function InboxLayout({
     {
       name: "همگانی",
       icon: <GroupIcon />,
-      link: "/projects/completed",
+      link: "/inbox/global",
       color: "from-red-700",
       count: 0,
       secondColor: "to-yellow-400",

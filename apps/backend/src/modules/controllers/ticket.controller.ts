@@ -50,11 +50,27 @@ export const getAllTickets = async (req: Request, res: Response) => {
       limit = 10,
     } = req.query;
 
+    const user = req.user as {
+      _id: string;
+      role: "model" | "admin" | "developer";
+    };
     const query: Record<string, any> = {};
-    if (status) query.status = status;
+
+    if (user.role === "model") {
+      query.reporterId = user._id;
+    } else if (reporterId) {
+      query.reporterId = reporterId;
+    }
+
+    if (status === "active") {
+      query.status = { $in: ["open", "in_progress"] };
+    } else if (status) {
+      query.status = status;
+    }
+
     if (priority) query.priority = priority;
     if (category) query.category = category;
-    if (reporterId) query.reporterId = reporterId;
+
     if (search) {
       query.title = { $regex: search, $options: "i" };
     }

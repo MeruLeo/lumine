@@ -6,6 +6,8 @@ import {
   deleteNotification,
   getNotificationById,
   getAllNotificationsForAdmin,
+  getPersonalNotifications,
+  getGlobalNotifications,
 } from "../controllers/notification.controller";
 import { authenticate } from "../../middlewares/auth.middleware";
 import { verifyDeveloperOrAdmin } from "../../middlewares/user.isAdmin";
@@ -26,6 +28,9 @@ router.get(
   verifyDeveloperOrAdmin,
   asyncHandler(getAllNotificationsForAdmin)
 );
+router.get("/personal", authenticate, asyncHandler(getPersonalNotifications));
+router.get("/global", authenticate, asyncHandler(getGlobalNotifications));
+
 router.get(
   "/:id",
   authenticate,

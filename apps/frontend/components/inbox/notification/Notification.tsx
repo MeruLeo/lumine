@@ -39,15 +39,13 @@ export const Notification: React.FC<Props> = ({ notification }) => {
     getMe();
   }, []);
 
+  const hasSeen = notification.seenBy.some((u) => u._id === user?._id);
+
   useEffect(() => {
-    if (user?.role === "model") {
-      if (!notification.seenBy.includes(user?._id)) {
-        markAsRead(notification._id);
-      }
-    } else {
-      null;
+    if (user?.role === "model" && !hasSeen) {
+      markAsRead(notification._id);
     }
-  }, []);
+  }, [user?._id, notification._id]);
 
   const isPersonal = notification.type === "personal";
 
@@ -60,17 +58,19 @@ export const Notification: React.FC<Props> = ({ notification }) => {
             <span>{statusIcon[notification.status]}</span>
             <h3 className="font-bold =">{notification.title}</h3>
           </div>
-          <Button
-            className="text-sm"
-            color="danger"
-            radius="full"
-            variant="light"
-            size="sm"
-            isIconOnly
-            onPress={() => setIsOpen(true)}
-          >
-            <TrashIcon />
-          </Button>
+          {user?.role === "model" ? null : (
+            <Button
+              className="text-sm"
+              color="danger"
+              radius="full"
+              variant="light"
+              size="sm"
+              isIconOnly
+              onPress={() => setIsOpen(true)}
+            >
+              <TrashIcon />
+            </Button>
+          )}
         </header>
 
         {/* پیام */}

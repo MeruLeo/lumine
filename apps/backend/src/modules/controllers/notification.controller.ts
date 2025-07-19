@@ -157,3 +157,45 @@ export const deleteNotification = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "خطای سرور", error: err });
   }
 };
+
+export const getPersonalNotifications = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?._id;
+    const isAdmin = req.user?.role === "admin";
+
+    const filter = isAdmin
+      ? { type: "personal" }
+      : { type: "personal", recipients: userId };
+
+    const notifications = await Notification.find(filter)
+      .sort({ createdAt: -1 })
+      .populate("recipients", "fullName modelingCode")
+      .populate("seenBy", "fullName modelingCode")
+      .lean();
+
+    return res.status(200).json({ notifications });
+  } catch (err) {
+    return res.status(500).json({ message: "خطای سرور", error: err });
+  }
+};
+
+export const getGlobalNotifications = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?._id;
+    const isAdmin = req.user?.role === "admin";
+
+    const filter = isAdmin
+      ? { type: "global" }
+      : { type: "global", recipients: userId };
+
+    const notifications = await Notification.find(filter)
+      .sort({ createdAt: -1 })
+      .populate("recipients", "fullName modelingCode")
+      .populate("seenBy", "fullName modelingCode")
+      .lean();
+
+    return res.status(200).json({ notifications });
+  } catch (err) {
+    return res.status(500).json({ message: "خطای سرور", error: err });
+  }
+};

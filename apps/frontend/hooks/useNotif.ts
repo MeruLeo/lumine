@@ -14,6 +14,8 @@ export const useNotification = () => {
     getNotificationById,
     getUserNotifications,
     markAsRead,
+    getPersonalNotifications,
+    getGlobalNotifications,
   } = useNotificationStore();
 
   return {
@@ -29,5 +31,7 @@ export const useNotification = () => {
     getNotificationById,
     getUserNotifications,
     markAsRead,
+    getPersonalNotifications,
+    getGlobalNotifications,
   };
 };
