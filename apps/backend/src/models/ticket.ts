@@ -6,7 +6,7 @@ const ticketSchema = new Schema<ITicket>({
   message: { type: String, required: true },
   status: {
     type: String,
-    enum: ["open", "in_progress", "resolved", "closed"],
+    enum: ["open", "in_progress", "closed"],
     default: "open",
   },
   priority: {
@@ -19,9 +19,11 @@ const ticketSchema = new Schema<ITicket>({
   updatedAt: { type: Date, default: Date.now },
   category: {
     type: String,
-    enum: ["مالی", "کاری", "آموزشی", "موارد دیگر"],
+    enum: ["financial", "work", "teach", "other"],
     default: null,
   },
+  number: { required: true, type: Number, unique: true },
+  projectId: { required: false, type: Schema.Types.ObjectId, ref: "Project" },
 });
 
 export const TicketModel = model<ITicket>("Ticket", ticketSchema);

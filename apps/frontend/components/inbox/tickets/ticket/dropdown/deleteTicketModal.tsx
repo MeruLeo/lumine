@@ -12,26 +12,28 @@ import {
 } from "@heroui/react";
 import { useProject } from "@/hooks/useProject";
 import { useRouter } from "next/navigation";
+import { useTicket } from "@/hooks/useTiecket";
+import PersianNumber from "@/utils/convertToPersianNumber";
 
 interface DeleteProjectModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export default function DeleteProjectModal({
+export default function DeleteTicketModal({
   isOpen,
   onOpenChange,
 }: DeleteProjectModalProps) {
-  const { currentProject, deleteProject } = useProject();
+  const { selectedTicket, deleteTicket } = useTicket();
   const [confirmation, setConfirmation] = useState("");
 
   const router = useRouter();
 
   const handleDelete = async () => {
-    if (!currentProject) return;
+    if (!selectedTicket) return;
 
     try {
-      await deleteProject(currentProject._id);
+      await deleteTicket(selectedTicket._id);
       setConfirmation("");
       onOpenChange(false);
       router.back();
@@ -40,28 +42,32 @@ export default function DeleteProjectModal({
     }
   };
 
-  const isMatch = confirmation.trim() === currentProject?.name?.trim();
+  const isMatch =
+    confirmation.trim() === selectedTicket?.number.toString().trim();
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
       <ModalContent>
         {(onClose) => (
           <>
-            <ModalHeader>حذف پروژه</ModalHeader>
+            <ModalHeader>حذف تیکت</ModalHeader>
             <ModalBody>
               <p className="text-sm text-danger font-medium">
-                آیا مطمئن هستید که می‌خواهید پروژه
-                <span className="font-bold">{currentProject?.name}</span> را حذف
-                کنید؟ این عملیات قابل بازگشت نیست.
+                آیا مطمئن هستید که می‌خواهید تیکت
+                <span className="font-bold">
+                  <PersianNumber number={`${selectedTicket?.number}`} />
+                </span>{" "}
+                را حذف کنید؟ این عملیات قابل بازگشت نیست.
               </p>
               <p className="text-xs text-gray-500 mt-2">
-                لطفاً برای تأیید حذف، نام پروژه را دقیق وارد کنید.
+                لطفاً برای تأیید حذف، شماره تیکت را دقیق وارد کنید.
               </p>
               <Input
                 radius="lg"
                 variant="faded"
-                placeholder="نام پروژه را وارد کنید"
+                placeholder="شماره تیکت را وارد کنید"
                 value={confirmation}
+                type="number"
                 onChange={(e) => setConfirmation(e.target.value)}
               />
             </ModalBody>
@@ -82,7 +88,7 @@ export default function DeleteProjectModal({
                 isDisabled={!isMatch}
                 onPress={handleDelete}
               >
-                حذف پروژه
+                حذف تیکت
               </Button>
             </ModalFooter>
           </>

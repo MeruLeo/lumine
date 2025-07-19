@@ -1,12 +1,12 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
-import { IUser } from "../../../packages/types/dist/index";
+import { UserType } from "../types/users";
 
 import API from "@/lib/axios";
 
 interface AuthState {
-  user: IUser | null;
+  user: UserType | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   success: boolean;

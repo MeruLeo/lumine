@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import { TicketModel } from "../../models/ticket";
 import { errorResponse, successResponse } from "../../utils/responses";
 import { TicketReplyModel } from "../../models/ticketReply";
+import { generateUniqueTicketNumber } from "../../utils/ticketNumberGen";
 
 // -------------------- Create Ticket --------------------
 export const createTicket = async (req: Request, res: Response) => {
@@ -11,9 +12,11 @@ export const createTicket = async (req: Request, res: Response) => {
     const { title, message, priority, reporterId, category, projectId } =
       req.body;
 
-    if (!title || !message || !priority || !reporterId || !projectId) {
+    if (!title || !message || !priority || !reporterId) {
       return errorResponse(res, 400, "Missing required fields");
     }
+
+    const ticketNumber = await generateUniqueTicketNumber();
 
     const newTicket = await TicketModel.create({
       title,
@@ -23,6 +26,7 @@ export const createTicket = async (req: Request, res: Response) => {
       reporterId,
       category,
       projectId,
+      number: ticketNumber,
     });
 
     successResponse(res, 201, {
@@ -34,7 +38,6 @@ export const createTicket = async (req: Request, res: Response) => {
   }
 };
 
-// -------------------- Get All Tickets with Filtering --------------------
 export const getAllTickets = async (req: Request, res: Response) => {
   try {
     const {
@@ -47,11 +50,27 @@ export const getAllTickets = async (req: Request, res: Response) => {
       limit = 10,
     } = req.query;
 
+    const user = req.user as {
+      _id: string;
+      role: "model" | "admin" | "developer";
+    };
     const query: Record<string, any> = {};
-    if (status) query.status = status;
+
+    if (user.role === "model") {
+      query.reporterId = user._id;
+    } else if (reporterId) {
+      query.reporterId = reporterId;
+    }
+
+    if (status === "active") {
+      query.status = { $in: ["open", "in_progress"] };
+    } else if (status) {
+      query.status = status;
+    }
+
     if (priority) query.priority = priority;
     if (category) query.category = category;
-    if (reporterId) query.reporterId = reporterId;
+
     if (search) {
       query.title = { $regex: search, $options: "i" };
     }
@@ -110,7 +129,7 @@ export const updateTicketById = async (req: Request, res: Response) => {
       return errorResponse(res, 400, "Invalid ticket ID format");
     }
 
-    const allowedStatuses = ["open", "in_progress", "resolved", "closed"];
+    const allowedStatuses = ["open", "in_progress", "closed"];
     const allowedPriorities = ["low", "medium", "high", "urgent"];
 
     const updateData: Record<string, any> = {};
@@ -172,7 +191,9 @@ export const getTicketsByReporter = async (req: Request, res: Response) => {
       return errorResponse(res, 400, "Invalid reporter ID format");
     }
 
-    const tickets = await TicketModel.find({ reporterId }).lean();
+    const tickets = await TicketModel.find({ reporterId })
+      .lean()
+      .sort({ createdAt: -1 });
 
     successResponse(res, 200, { tickets });
   } catch (err) {
@@ -218,5 +239,23 @@ export const getRepliesByTicket = async (req: Request, res: Response) => {
     successResponse(res, 200, { replies });
   } catch (err) {
     errorResponse(res, 500, "Failed to get replies", err);
+  }
+};
+
+export const getTicketByNumber = async (req: Request, res: Response) => {
+  try {
+    const { number } = req.params;
+    const ticket = await TicketModel.findOne({ number }).populate(
+      "reporterId",
+      "fullName"
+    );
+
+    if (!ticket) {
+      return res.status(404).json({ message: "Ticket not found" });
+    }
+
+    res.status(200).json({ ticket });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err });
   }
 };
