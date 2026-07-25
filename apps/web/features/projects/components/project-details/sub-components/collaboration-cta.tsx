@@ -1,6 +1,8 @@
 import { Button } from "@heroui/react";
 import { LocationArrowFill } from "@gravity-ui/icons";
 import { BodyPortal } from "@/shared/components/body-portal";
+import { BookamrkProject } from "./bookmark";
+import { ShareProject } from "./share";
 
 interface CollaborationCtaProps {
   onClick?: () => void;
@@ -13,7 +15,8 @@ export const CollaborationCta = ({
 }: CollaborationCtaProps) => {
   return (
     <BodyPortal>
-      <div className="fixed bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-full shadow-2xl sm:bottom-4">
+      <div className="fixed bottom-24 flex items-center gap-2 left-1/2 z-50 -translate-x-1/2 rounded-full shadow-2xl sm:bottom-4">
+        <ShareProject />
         <div className="rounded-full p-2 backdrop-blur-3xl">
           <Button
             size="lg"
@@ -25,6 +28,7 @@ export const CollaborationCta = ({
             ارسال درخواست همکاری
           </Button>
         </div>
+        <BookamrkProject />
       </div>
     </BodyPortal>
   );
