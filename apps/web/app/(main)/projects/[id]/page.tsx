@@ -1,6 +1,5 @@
-// app/projects/[id]/page.tsx
 import { notFound } from "next/navigation";
-import { ProjectDetails } from "@/features/projects/components/project-details";
+import { ProjectDetails } from "@/features/projects/components/project-details/index";
 import { getMockProjectById } from "@/features/projects/components/mocks/projects.mock";
 
 interface ProjectPageProps {

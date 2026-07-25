@@ -1,0 +1,31 @@
+import { Button } from "@heroui/react";
+import { LocationArrowFill } from "@gravity-ui/icons";
+import { BodyPortal } from "@/shared/components/body-portal";
+
+interface CollaborationCtaProps {
+  onClick?: () => void;
+  isLoading?: boolean;
+}
+
+export const CollaborationCta = ({
+  onClick,
+  isLoading,
+}: CollaborationCtaProps) => {
+  return (
+    <BodyPortal>
+      <div className="fixed bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-full shadow-2xl sm:bottom-4">
+        <div className="rounded-full p-2 backdrop-blur-3xl">
+          <Button
+            size="lg"
+            className="font-bold"
+            onClick={onClick}
+            isPending={isLoading}
+          >
+            {!isLoading && <LocationArrowFill />}
+            ارسال درخواست همکاری
+          </Button>
+        </div>
+      </div>
+    </BodyPortal>
+  );
+};
