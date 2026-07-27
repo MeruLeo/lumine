@@ -4,10 +4,10 @@ from .views import *
 
 router = DefaultRouter()
 
-# روتر برای پروژه
-router.register("projects", ProjectViewSet, basename="projects")
 # روتر برای درخواست اهای پروژه
 router.register("requests", ProjectRequestView, basename="project_requests")
+# روتر برای پروژه
+router.register("", ProjectViewSet, basename="projects")
 
 
 # آدرس های پروژه

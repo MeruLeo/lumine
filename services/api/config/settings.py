@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     # frame works
     'rest_framework',
     'django_jalali',
+    'django_extensions',
 
     # local feature
     'apps.authentication.apps.AuthenticationConfig',
