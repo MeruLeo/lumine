@@ -9,7 +9,7 @@ export type ProjectStatus =
 export type ModerationStatus = "pending" | "approved" | "rejected";
 
 export type ProjectRequestStatus =
-  | "pending"
+  | "pendding"
   | "accepted"
   | "rejected"
   | "expired";
