@@ -8,7 +8,7 @@ import { useAuthStore } from "@/features/auth/store/auth_1";
 export function OTPField({ field, control }: any) {
   const length = field.maxLength ?? 6;
 
-  const otpExpire = useAuthStore((s) => s.otpExpire);
+  const otpExpire = useAuthStore((s) => s.registration.otpExpire);
 
   const { formatted, isExpired, reset } = useOtpTimer(otpExpire ?? 0);
 

@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
-import { getMe } from "../../api/me";
+import { getMe } from "../../../../profile/api/me";
 
 export const meQueryOptions = () =>
   queryOptions({

@@ -15,7 +15,7 @@ export const ShareProject = ({ onClick, isLoading }: ShareProps) => {
   return (
     <Button
       size="lg"
-      className="border border-border backdrop-blur-3xl bg-transparent  "
+      className="border border-border backdrop-blur-3xl bg-transparent text-primary"
       onClick={onClick}
       isPending={isLoading}
       isIconOnly
