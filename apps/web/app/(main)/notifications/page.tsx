@@ -1,3 +1,4 @@
+import { NotificationPanel } from "@/features/notifications";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -6,8 +7,13 @@ export const metadata: Metadata = {
 
 export default function Notifications() {
   return (
-    <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-      <h1>اعلانات</h1>
+    <section className="flex flex-col gap-4 p-10">
+      <header>
+        <p className="mt-2 text-text-secondary-light dark:text-text-secondary-dark">
+          آخرین اعلان‌ها، هشدارها و فرصت‌های مرتبط با شما
+        </p>
+      </header>
+      <NotificationPanel />
     </section>
   );
 }
