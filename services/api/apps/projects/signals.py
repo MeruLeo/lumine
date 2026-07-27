@@ -2,6 +2,8 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from .models import ProjectRequest, Project
 from django.db import transaction
+from django.utils import timezone
+from datetime import timedelta
 
 @receiver(post_save, sender=ProjectRequest)
 def update_project_model_on_accept(sender, instance, created, **kwargs):
@@ -57,5 +59,6 @@ def set_open_status_on_approval(sender, instance, **kwargs):
             instance.status == "draft"):
             
             instance.status = "open"
+            instance.expires_at = timezone.now() + timedelta(days=30)
     except Project.DoesNotExist:
         pass

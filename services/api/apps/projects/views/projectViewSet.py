@@ -7,29 +7,43 @@ from core.permissions.isProjectEmployer import IsProjectEmployer
 from core.apiResponse.apiResponse import ApiResponse
 from rest_framework.decorators import action
 from django.db import transaction
+from rest_framework.filters import SearchFilter
+from django.utils import timezone
 
 
 class ProjectViewSet(ModelViewSet):
     serializer_class = ProjectSerializer
     permission_classes = [IsAuthenticated]
 
+    filter_backends = [SearchFilter]
+    search_fields = [
+        "name",
+        "description",
+        "employer__first_name",
+        "employer__last_name"
+    ]
+
 
     def get_queryset(self):
         if self.action == "list":
-            user = self.request.user
-            queryset = Project.objects.filter(employer=self.request.user)
-            model = self.request.query_params.get("model")
-            employer = self.request.query_params.get("employer")
-            if model:
-                queryset = Project.objects.filter(model=user)
-            elif employer:
-                queryset = Project.objects.filter(employer=user)
+            queryset = (
+                Project.objects.filter(moderation_status="approved", expires_at__gt=timezone.now())
+                .select_related("employer", "model", "category")
+            )
+
+            province = self.request.query_params.get("province")
+            if province:
+                queryset = queryset.filter(province=province)
+
             return queryset
-        return Project.objects.all().select_related("employer", "model", "category")
+
+        return Project.objects.all().select_related(
+            "employer", "model", "category"
+        )
     
 
     def get_permissions(self):
-        if self.action in ["list", "create"]:
+        if self.action in ["create"]:
             return [IsAuthenticated(), IsEmployer()]
         elif self.action in ["update", 'partial_update', "destroy", "bulk-delete"]:
             return [IsAuthenticated(), IsEmployer(), IsProjectEmployer()]
