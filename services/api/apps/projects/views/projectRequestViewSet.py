@@ -80,21 +80,28 @@ class ProjectRequestView(ModelViewSet):
                     message="پروژه فوق وجود ندارد"
                 )
 
-            receiver = project.employer
+            if project.model is None:
 
-            # کارفرما نمی‌تواند برای پروژه خودش درخواست ارسال کند
-            if sender == receiver:
-                return ApiResponse.error(
-                    message="شما نمی‌توانید برای پروژه خودتان درخواست ارسال کنید."
-                )
 
-            
-            # فقط مدل‌ها اجازه ارسال درخواست پروژه را دارند
-            if sender.groups.filter(name="employer").exists():
-                if receiver != sender:
+                receiver = project.employer
+
+                # کارفرما نمی‌تواند برای پروژه خودش درخواست ارسال کند
+                if sender == receiver:
                     return ApiResponse.error(
-                        message="شما اجازه ارسال درخواست برای پروژه سایر کارفرمایان را ندارید."
+                        message="شما نمی‌توانید برای پروژه خودتان درخواست ارسال کنید."
                     )
+
+                
+                # فقط مدل‌ها اجازه ارسال درخواست پروژه را دارند
+                if sender.groups.filter(name="employer").exists():
+                    if receiver != sender:
+                        return ApiResponse.error(
+                            message="شما اجازه ارسال درخواست برای پروژه سایر کارفرمایان را ندارید."
+                        )
+            else:
+                return ApiResponse.error(
+                    message="پروژه فوق را کاربر دیگری برداشته است"
+                )
                 
         # اکثرا کارفرما درخواست میدهد
         else:
@@ -104,22 +111,28 @@ class ProjectRequestView(ModelViewSet):
                 return ApiResponse.error(
                     message="پروژه فوق وجود ندارد"
                 )
+
+            if project.model is None:
             
-            try:
-                receiver = User.objects.get(id=request.data["receiver"])
-            except User.DoesNotExist:
+                try:
+                    receiver = User.objects.get(id=request.data["receiver"])
+                except User.DoesNotExist:
+                    return ApiResponse.error(
+                        message="کاربر مورد نظر وجود ندارد."
+                    )
+                
+                if sender != project.employer:
+                    return ApiResponse.error(
+                        message="شما اجازه ارسال درخواست برای پروژه های کارفرمای دیگر را ندارید"
+                    )
+                
+                elif not receiver.groups.filter(name="model").exists():
+                    return ApiResponse.error(
+                        message="گیرنده درخواست شما مدل نمیباشد"
+                    )
+            else:
                 return ApiResponse.error(
-                    message="کاربر مورد نظر وجود ندارد."
-                )
-            
-            if sender != project.employer:
-                return ApiResponse.error(
-                    message="شما اجازه ارسال درخواست برای پروژه های کارفرمای دیگر را ندارید"
-                )
-            
-            elif not receiver.groups.filter(name="model").exists():
-                return ApiResponse.error(
-                    message="گیرنده درخواست شما مدل نمیباشد"
+                    message="پروژه فوق را کاربر دیگری برداشته است"
                 )
             
 
