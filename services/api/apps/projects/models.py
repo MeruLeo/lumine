@@ -38,6 +38,8 @@ class Project(models.Model):
     ]
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="draft")
 
+    expires_at = jDateTimeField(null=True, blank=True)
+
     # فیلدهای مستحب
     created = jDateTimeField(auto_now_add=True)
     updated = jDateTimeField(auto_now=True)

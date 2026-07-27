@@ -10,9 +10,10 @@ class ProjectModelListView(ListAPIView):
     permission_classes = [IsAuthenticated, IsModel]
 
     def get_queryset(self):
-        queryset = Project.objects.filter(status="accept")
+        user = self.request.user
+        queryset = Project.objects.filter(model=user)
         status_params = self.request.query_params.get("status")
 
         if status_params:
-            queryset = Project.objects.filter(status=status_params, model=self.request.user)
+            queryset = Project.objects.filter(status=status_params, model=user)
         return queryset
