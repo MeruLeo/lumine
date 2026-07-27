@@ -9,7 +9,6 @@ export const PROJECT_STATUS_LABELS: Record<ProjectStatus, string> = {
   cancelled: "لغو شده",
 };
 
-/** کلاس‌های Tailwind برای بج هر وضعیت (پس‌زمینه/متن، سازگار با دارک‌مود) */
 export const PROJECT_STATUS_STYLES: Record<ProjectStatus, string> = {
   draft: "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300",
   open: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400",
