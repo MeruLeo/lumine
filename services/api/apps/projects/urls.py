@@ -14,6 +14,7 @@ router.register("", ProjectViewSet, basename="projects")
 urlpatterns = [
     path("employer", ProjectEmployerListView.as_view()),
     path("model", ProjectModelListView.as_view()),
+    path("provinces", ProvinceView.as_view())
 ]
 
 urlpatterns += router.urls

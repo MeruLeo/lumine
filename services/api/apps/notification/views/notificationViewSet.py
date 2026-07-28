@@ -12,7 +12,7 @@ class NotificationView(ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = Notification.objects.filter(sender=user)
+        queryset = Notification.objects.all()
         return queryset
 
     def create(self, request, *args, **kwargs):
@@ -28,13 +28,13 @@ class NotificationView(ModelViewSet):
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return ApiResponse.success(
-                message="نوتیف های شما با موفقیت گرفته شد",
-                data=serializer.data
-            )
+        # page = self.paginate_queryset(queryset)
+        # if page is not None:
+        #     serializer = self.get_serializer(page, many=True)
+        #     return ApiResponse.success(
+        #         message="نوتیف های شما با موفقیت گرفته شد",
+        #         data=serializer.data
+        #     )
         
         serializer = self.get_serializer(queryset, many=True)
         return ApiResponse.success(
@@ -48,8 +48,8 @@ class NotificationView(ModelViewSet):
         serializer = self.get_serializer(obj)
 
         return ApiResponse.success(
-                message="نوتیف شما با موفقیت گرفته شد",
-                data=serializer.data
+            message="نوتیف شما با موفقیت گرفته شد",
+            data=serializer.data
         )
 
     def update(self, request, *args, **kwargs):
