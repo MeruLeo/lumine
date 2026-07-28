@@ -9,7 +9,7 @@ export type ProjectStatus =
 export type ModerationStatus = "pending" | "approved" | "rejected";
 
 export type ProjectRequestStatus =
-  | "pendding"
+  | "pending"
   | "accepted"
   | "rejected"
   | "expired";
@@ -26,25 +26,33 @@ export interface Province {
   name: string;
 }
 
-export interface Category {
+export interface ProjectCategory {
   id: number;
   name: string;
-  slug?: string;
+  persion_name?: string;
+  type?: string;
 }
 
 export interface Project {
   id: number;
   employer: ProjectUser;
   model: ProjectUser | null;
+
   province: Province;
+  category: ProjectCategory;
+
   name: string;
   description: string;
   budget: number;
-  category: Category;
+
   startDate: string;
   endDate: string;
+
   moderationStatus: ModerationStatus;
   status: ProjectStatus;
+
+  expiresAt: string | null;
+
   created: string;
   updated: string;
 }
@@ -54,7 +62,9 @@ export interface ProjectRequest {
   project: number;
   sender: ProjectUser;
   receiver: ProjectUser;
+
   status: ProjectRequestStatus;
+
   created: string;
   updated: string;
 }

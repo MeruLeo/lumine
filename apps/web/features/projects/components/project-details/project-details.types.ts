@@ -3,8 +3,13 @@ import type { Project } from "../../types/project";
 
 export interface ProjectDetailsProps {
   project: Project;
-  onCollaborate?: () => void;
-  isLoadingAction?: boolean;
+  collaboration?: ProjectDetailsCollaboration;
+}
+
+export interface ProjectDetailsCollaboration {
+  visible: boolean;
+  onClick: () => void;
+  isLoading?: boolean;
 }
 
 export interface DetailItem {

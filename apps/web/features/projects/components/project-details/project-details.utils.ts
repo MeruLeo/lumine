@@ -62,7 +62,7 @@ export const mapProjectToDetails = ({
       key: "category",
       icon: tagIcon,
       label: "دسته‌بندی",
-      content: project.category.name,
+      content: project.category.persion_name,
     },
     {
       key: "province",

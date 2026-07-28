@@ -8,20 +8,18 @@ import {
   Tag,
 } from "@gravity-ui/icons";
 import { WalletIcon } from "lucide-react";
-
 import type { ProjectDetailsProps } from "./project-details.types";
 import { mapProjectToDetails } from "./project-details.utils";
 import { ProjectStatusBadge } from "../project-status-badge";
-
 import { PropertyRow } from "./sub-components/property-row";
 import { PersonChip } from "./sub-components/person-chip";
 import { Description } from "./sub-components/description";
 import { CollaborationCta } from "./sub-components/collaboration-cta";
+import { Separator } from "@heroui/react";
 
 export const ProjectDetails = ({
   project,
-  onCollaborate,
-  isLoadingAction,
+  collaboration,
 }: ProjectDetailsProps) => {
   const details = mapProjectToDetails({
     project,
@@ -43,6 +41,7 @@ export const ProjectDetails = ({
       <h1 className="mt-4 mb-8 text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
         {project.name}
       </h1>
+
       <section
         className="flex flex-col"
         data-testid="project-properties-section"
@@ -56,11 +55,15 @@ export const ProjectDetails = ({
           ))}
       </section>
 
-      <hr className="my-8 border-zinc-200 dark:border-zinc-800" />
-
+      <Separator className="my-10" />
       <Description text={project.description} />
 
-      <CollaborationCta onClick={onCollaborate} isLoading={isLoadingAction} />
+      {collaboration?.visible ? (
+        <CollaborationCta
+          onClick={collaboration.onClick}
+          isLoading={collaboration.isLoading}
+        />
+      ) : null}
     </article>
   );
 };
