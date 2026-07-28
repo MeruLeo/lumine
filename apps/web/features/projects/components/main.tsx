@@ -3,6 +3,10 @@
 import { HeaderProjects } from "./header";
 import { ProjectList } from "./project-list";
 import { useProjects } from "../hooks/queries/use-projects";
+import { Can } from "@/shared/components/authorization/can";
+import { ProjectAction } from "@/shared/lib/authorization/actions";
+import { Button } from "@heroui/react";
+import { Plus } from "@gravity-ui/icons";
 
 export const MainProjects = () => {
   const { data, isPending, isError, error, refetch } = useProjects();
@@ -53,7 +57,15 @@ export const MainProjects = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <HeaderProjects />
+      <section className="flex items-center justify-between">
+        <HeaderProjects />
+        <Can action={ProjectAction.Create}>
+          <Button size="lg">
+            <Plus />
+            ایجاد پروژه
+          </Button>
+        </Can>
+      </section>
 
       <section>
         <ProjectList projects={data?.items ?? []} />

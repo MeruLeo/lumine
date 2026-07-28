@@ -7,7 +7,7 @@ export const HeaderProjects = () => {
       <SearchField name="search" className={`w-full sm:w-[256px]`}>
         <SearchField.Group>
           <SearchField.SearchIcon style={{ margin: 0, marginRight: "1rem" }} />
-          <SearchField.Input placeholder="پروژه مورد نظر خود را جستجو کنید" />
+          <SearchField.Input placeholder="جستجو در نام ، کارفرما و ..." />
           <SearchField.ClearButton style={{ margin: 0, marginLeft: "1rem" }} />
         </SearchField.Group>
       </SearchField>

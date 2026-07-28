@@ -1,5 +1,3 @@
-// features/projects/api/projects.ts
-
 import { axiosInstance } from "@/shared/lib/http/axios";
 import type {
   ApiEnvelopeDto,

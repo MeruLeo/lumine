@@ -16,6 +16,8 @@ import { PersonChip } from "./sub-components/person-chip";
 import { Description } from "./sub-components/description";
 import { CollaborationCta } from "./sub-components/collaboration-cta";
 import { Separator } from "@heroui/react";
+import { Can } from "@/shared/components/authorization/can";
+import { ProjectAction } from "@/shared/lib/authorization/actions";
 
 export const ProjectDetails = ({
   project,
@@ -58,12 +60,12 @@ export const ProjectDetails = ({
       <Separator className="my-10" />
       <Description text={project.description} />
 
-      {collaboration?.visible ? (
-        <CollaborationCta
-          onClick={collaboration.onClick}
-          isLoading={collaboration.isLoading}
-        />
-      ) : null}
+      {/* <Can action={ProjectAction.Apply}> */}
+      <CollaborationCta
+        onClick={collaboration?.onClick}
+        isLoading={collaboration?.isLoading}
+      />
+      {/* </Can> */}
     </article>
   );
 };
