@@ -1,5 +1,12 @@
 from django.urls import path
 from .views import *
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+
+router.register("models", GetModelView, basename="models")
+router.register("employers", GetEmployerView, basename="employers")
+
 
 urlpatterns = [
     path('me/', UserProfileView.as_view()),
@@ -11,3 +18,5 @@ urlpatterns = [
     path('me/instructor-profile', MeInstructorProfileView.as_view()),
     path('me/basic-info', MeBasicInfoView.as_view()),
 ]
+
+urlpatterns += router.urls

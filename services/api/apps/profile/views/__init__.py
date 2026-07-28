@@ -6,6 +6,8 @@ from .meTechnicalInfoView import MeThecnicalInfoView
 from .meEmployerProfileView import MeEmployerProfileView
 from .meInstructorProfileView import MeInstructorProfileView
 from .meBasicInfoView import MeBasicInfoView
+from .getAllUserView import *
+
 __all__ = [
     "UserProfileView",
     'MeImagesPortfolioView',
@@ -15,4 +17,6 @@ __all__ = [
     "MeEmployerProfileView",
     "MeInstructorProfileView",
     "MeBasicInfoView",
+    "GetModelView",
+    "GetEmployerView"
 ]

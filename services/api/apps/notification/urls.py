@@ -6,8 +6,8 @@ from .views.notificationRecipientView import NotificationRecipientViewSet
 
 router = DefaultRouter()
 
-router.register("notifications", NotificationView, basename="notification")
 router.register("recipients", NotificationRecipientViewSet, basename="notification_recipient")
+router.register("", NotificationView, basename="notification")
 
 urlpatterns = [
 

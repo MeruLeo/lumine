@@ -8,4 +8,4 @@ class MeRolesView(ListAPIView):
     serializer_class = GroupSerializer
 
     def get_queryset(self):
-        return self.request.user.groups
+        return self.request.user.groups.all()

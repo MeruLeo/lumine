@@ -7,6 +7,7 @@ from apps.authentication.models import User
 from django.db.models import Q
 from core.permissions.IsRequestSendererPermission import IsRequestSenderer
 from core.permissions.IsRequestReceiverPermission import IsRequestReceiverer
+from apps.notification.models import Notification
 
 
 class ProjectRequestView(ModelViewSet):
@@ -60,8 +61,30 @@ class ProjectRequestView(ModelViewSet):
         serializer = self.get_serializer(req, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
+        status = request.data["status"]
+        if status == "accepted":
+            Notification.objects.create(
+                title=f"درخواست شما را پذیرفتم",
+                message=f"شما در حال حاضر آماده کار برای پروژه {req.project.name} هستید",
+                type_sender="user",
+                type_notif="success",
+                sender=req.receiver,
+                user=req.sender
+            )
+
+        elif status == "rejected":
+            Notification.objects.create(
+                title=f"درخواست شما را رد کردم",
+                message=f"متاسفانه شما برای پروژه {req.project.name} آمادگی لازم را ندارید.",
+                type_sender="user",
+                type_notif="warning",
+                sender=req.receiver,
+                user=req.sender
+            )
+
         return ApiResponse.success(
-            message="در خواست با موفقیت قبول شد",
+            message="در خواست با موفقیت بروزرسانی شد",
             data=serializer.data
         )
     

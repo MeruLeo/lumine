@@ -7,12 +7,17 @@ class Notification(models.Model):
     title = models.CharField(max_length=255)
     message = models.TextField()
 
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notification_send")
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notification_send", null=True, blank=True)
+
+    CHOICES_TYPE_SENDER = [
+        ("lumine", "لومینه"),
+        ("user", "کاربر"), 
+    ]
+    type_sender = models.CharField(max_length=25, choices=CHOICES_TYPE_SENDER, null=True, blank=True)
 
     CHOICES_TYPE_NOTIF = [
-        ("system", "سیستم"),
-        ("promotion", "پروموشن"),
-        ("warning", "خطر"),
+        ("success", "موفق"),
+        ("warning", "ناموفق"),
         ("info", "اطلاعات"),
     ]
     type_notif = models.CharField(max_length=25, choices=CHOICES_TYPE_NOTIF, null=True, blank=True)
