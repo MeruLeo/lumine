@@ -19,6 +19,7 @@ import { Separator } from "@heroui/react";
 import { Can } from "@/shared/components/authorization/can";
 import { ProjectAction } from "@/shared/lib/authorization/actions";
 import { ApplyToProjectButton } from "./sub-components/apply-to-project-button";
+import { useProjectRequestStatus } from "../../hooks/queries/use-project-request";
 
 export const ProjectDetails = ({
   project,
@@ -39,9 +40,11 @@ export const ProjectDetails = ({
     personNutHexIcon: <PersonNutHex />,
   });
 
+  const { hasRequested } = useProjectRequestStatus(project.id);
+
   const applySubject = {
     project,
-    hasRequested: collaboration?.hasRequested ?? false,
+    hasRequested,
   };
 
   return (

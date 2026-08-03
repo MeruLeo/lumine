@@ -6,17 +6,19 @@ import { projectRequestKeys } from "../../api/query-keys";
 import { useMe } from "@/features/profile/hooks/mutations/use-me";
 
 export function useProjectRequestStatus(projectId: number) {
-  const user = useMe();
+  const { data: user } = useMe();
 
   const query = useQuery({
-    queryKey: projectRequestKeys.list({ project: projectId, sender: user?.id }),
-    queryFn: () => getProjectRequests({ project: projectId, sender: user!.id }),
+    queryKey: projectRequestKeys.lists(),
+    queryFn: () => getProjectRequests(),
     enabled: Boolean(user),
   });
 
   return {
     hasRequested:
-      query.data?.some((r) => r.senderId === user?.data?.id) ?? false,
+      query.data?.some(
+        (r) => r.project === projectId && r.senderId === user?.id,
+      ) ?? false,
     isLoading: query.isLoading,
   };
 }

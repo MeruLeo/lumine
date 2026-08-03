@@ -19,7 +19,6 @@ export function useApplyToProject({
     mutationFn: (body: CreateProjectRequestBodyDto) =>
       createProjectRequest(body),
     onSuccess: (request) => {
-      // کش لیست درخواست‌ها را باطل کن تا hasRequested دفعه‌ی بعد درست باشد
       queryClient.invalidateQueries({
         queryKey: projectRequestKeys.lists(),
       });
