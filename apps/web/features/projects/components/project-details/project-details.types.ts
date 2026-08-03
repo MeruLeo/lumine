@@ -10,6 +10,7 @@ export interface ProjectDetailsCollaboration {
   visible: boolean;
   onClick: () => void;
   isLoading?: boolean;
+  hasRequested: boolean;
 }
 
 export interface DetailItem {

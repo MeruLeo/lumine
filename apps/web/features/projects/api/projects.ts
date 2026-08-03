@@ -61,7 +61,6 @@ export async function getProject(projectId: number): Promise<Project> {
   const { data } = await axiosInstance.get<
     ProjectDto | ApiEnvelopeDto<ProjectDto>
   >(`/projects/${projectId}/`);
-  console.log(data);
 
   return projectDtoToProject(unwrapData(data));
 }

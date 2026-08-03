@@ -9,7 +9,7 @@ export type ProjectStatus =
 export type ModerationStatus = "pending" | "approved" | "rejected";
 
 export type ProjectRequestStatus =
-  | "pending"
+  | "pendding"
   | "accepted"
   | "rejected"
   | "expired";
@@ -60,11 +60,9 @@ export interface Project {
 export interface ProjectRequest {
   id: number;
   project: number;
-  sender: ProjectUser;
-  receiver: ProjectUser;
-
+  senderId: number;
+  receiverId: number;
   status: ProjectRequestStatus;
-
   created: string;
   updated: string;
 }

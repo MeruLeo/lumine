@@ -1,8 +1,8 @@
 import type {
   PaginatedResponseDto,
   ProjectDto,
-  ProjectRequestDto,
   ProjectUserDto,
+  ProjectRequestDto,
   ProjectsListDto,
 } from "../types/project-api";
 import type { Project, ProjectRequest, ProjectUser } from "../types/project";
@@ -64,7 +64,7 @@ export function projectRequestDtoToProjectRequest(
   return {
     id: dto.id,
     project: dto.project,
-    sender: projectUserDtoToProjectUser(dto.sender),
+    senderId: projectUserDtoToProjectUser(dto.sender),
     receiver: projectUserDtoToProjectUser(dto.receiver),
     status: dto.status,
     created: dto.created,

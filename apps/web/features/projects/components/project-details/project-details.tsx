@@ -18,6 +18,7 @@ import { CollaborationCta } from "./sub-components/collaboration-cta";
 import { Separator } from "@heroui/react";
 import { Can } from "@/shared/components/authorization/can";
 import { ProjectAction } from "@/shared/lib/authorization/actions";
+import { ApplyToProjectButton } from "./sub-components/apply-to-project-button";
 
 export const ProjectDetails = ({
   project,
@@ -37,6 +38,11 @@ export const ProjectDetails = ({
     personIcon: <Person />,
     personNutHexIcon: <PersonNutHex />,
   });
+
+  const applySubject = {
+    project,
+    hasRequested: collaboration?.hasRequested ?? false,
+  };
 
   return (
     <article className="mx-auto mt-16 mb-24 flex w-full max-w-3xl flex-col px-4">
@@ -60,12 +66,9 @@ export const ProjectDetails = ({
       <Separator className="my-10" />
       <Description text={project.description} />
 
-      {/* <Can action={ProjectAction.Apply}> */}
-      <CollaborationCta
-        onClick={collaboration?.onClick}
-        isLoading={collaboration?.isLoading}
-      />
-      {/* </Can> */}
+      <Can action={ProjectAction.Apply} subject={applySubject}>
+        <ApplyToProjectButton projectId={project.id} />
+      </Can>
     </article>
   );
 };
