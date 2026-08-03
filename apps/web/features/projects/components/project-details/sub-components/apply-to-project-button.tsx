@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { CollaborationCta } from "./collaboration-cta";
 import { useApplyToProject } from "../../../hooks/queries/use-apply-to-project";
+import { toast } from "@heroui/react";
 
 interface ApplyToProjectButtonProps {
   projectId: number;
@@ -13,7 +14,7 @@ export function ApplyToProjectButton({ projectId }: ApplyToProjectButtonProps) {
 
   const { mutate, isPending } = useApplyToProject({
     onSuccess: (request) => {
-      router.push(`/requests/${request.id}`);
+      toast.success("درخواست شما با موفقیت ارسال شد");
     },
   });
 
