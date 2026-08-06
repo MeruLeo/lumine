@@ -1,16 +1,27 @@
 import axios, {
   type AxiosError,
+  type AxiosRequestConfig,
   type InternalAxiosRequestConfig,
   type AxiosResponse,
 } from "axios";
+
 import { tokenService } from "./token-service";
 import { useAuthStore } from "@/features/auth/store/auth_1";
+
+// ─── Types ──────────────────────────────────────────────────
 
 export interface ApiError {
   message: string;
   status?: number;
   data?: unknown;
 }
+
+type AuthMode = "registration" | "access";
+
+type CustomAxiosRequestConfig = InternalAxiosRequestConfig & {
+  _retry?: boolean;
+  _authMode?: AuthMode;
+};
 
 // ─── Endpoint Categories ────────────────────────────────────
 
@@ -22,9 +33,24 @@ const REGISTRATION_ENDPOINTS = [
   "/auth/work-info/",
   "/auth/portfolio/",
   "/auth/set-role/",
-  "/auth/categories/",
   "/auth/p-category/",
 ];
+
+const DUAL_AUTH_ENDPOINTS = ["/auth/categories"];
+
+// ─── Endpoint Helpers ───────────────────────────────────────
+
+function isPublicEndpoint(url: string): boolean {
+  return PUBLIC_ENDPOINTS.some((endpoint) => url.includes(endpoint));
+}
+
+function isRegistrationEndpoint(url: string): boolean {
+  return REGISTRATION_ENDPOINTS.some((endpoint) => url.includes(endpoint));
+}
+
+function isDualAuthEndpoint(url: string): boolean {
+  return DUAL_AUTH_ENDPOINTS.some((endpoint) => url.includes(endpoint));
+}
 
 // ─── Axios Instance ─────────────────────────────────────────
 
@@ -38,33 +64,81 @@ export const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-// ─── Request Interceptor ────────────────────────────────────
+// ─── Request Interceptor ───────────────────────────────────
 
 axiosInstance.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     if (config.headers?.["X-Skip-Interceptor"]) {
       delete config.headers["X-Skip-Interceptor"];
+
       return config;
     }
 
     const url = config.url ?? "";
 
-    if (PUBLIC_ENDPOINTS.some((endpoint) => url.includes(endpoint))) {
+    if (isPublicEndpoint(url)) {
       return config;
     }
 
-    if (REGISTRATION_ENDPOINTS.some((endpoint) => url.includes(endpoint))) {
-      const userToken = useAuthStore.getState().registration.userToken;
+    const registrationUserToken =
+      useAuthStore.getState().registration.userToken;
 
-      if (!userToken) {
+    if (isRegistrationEndpoint(url)) {
+      if (!registrationUserToken) {
         safeRedirect("/auth");
+
         return Promise.reject({
           message: "User token required for registration",
           status: 401,
         });
       }
 
-      config.headers.token = userToken;
+      config.headers.token = registrationUserToken;
+
+      (config as CustomAxiosRequestConfig)._authMode = "registration";
+
+      return config;
+    }
+
+    if (isDualAuthEndpoint(url)) {
+      if (registrationUserToken) {
+        config.headers.token = registrationUserToken;
+
+        (config as CustomAxiosRequestConfig)._authMode = "registration";
+
+        return config;
+      }
+
+      let accessToken = tokenService.getAccessToken();
+
+      if (!accessToken && tokenService.getRefreshToken()) {
+        try {
+          accessToken = await tokenService.refreshAccessToken();
+
+          updateAuthenticatedUser(accessToken);
+        } catch {
+          safeRedirect("/auth");
+
+          return Promise.reject({
+            message: "Access token required",
+            status: 401,
+          });
+        }
+      }
+
+      if (!accessToken) {
+        safeRedirect("/auth");
+
+        return Promise.reject({
+          message: "Access token required",
+          status: 401,
+        });
+      }
+
+      config.headers.Authorization = `Bearer ${accessToken}`;
+
+      (config as CustomAxiosRequestConfig)._authMode = "access";
+
       return config;
     }
 
@@ -74,16 +148,10 @@ axiosInstance.interceptors.request.use(
       try {
         accessToken = await tokenService.refreshAccessToken();
 
-        const currentState = useAuthStore.getState();
-
-        if (
-          !currentState.authenticated ||
-          currentState.authenticated.status !== "accept"
-        ) {
-          currentState.setAuthenticatedUser("accept", accessToken);
-        }
+        updateAuthenticatedUser(accessToken);
       } catch {
         safeRedirect("/auth");
+
         return Promise.reject({
           message: "Access token required",
           status: 401,
@@ -93,6 +161,7 @@ axiosInstance.interceptors.request.use(
 
     if (!accessToken) {
       safeRedirect("/auth");
+
       return Promise.reject({
         message: "Access token required",
         status: 401,
@@ -101,6 +170,8 @@ axiosInstance.interceptors.request.use(
 
     config.headers.Authorization = `Bearer ${accessToken}`;
 
+    (config as CustomAxiosRequestConfig)._authMode = "access";
+
     return config;
   },
   (error) => Promise.reject(error),
@@ -108,64 +179,74 @@ axiosInstance.interceptors.request.use(
 
 // ─── Response Interceptor ───────────────────────────────────
 
-// این متغیرها فقط client-side استفاده می‌شن
-// با guard از استفاده در SSR جلوگیری می‌کنیم
 let isRefreshing = false;
+
 let failedQueue: Array<{
   resolve: (value: string) => void;
   reject: (reason?: unknown) => void;
 }> = [];
 
-const processQueue = (error: unknown, token: string | null = null) => {
-  failedQueue.forEach((prom) => {
+const processQueue = (error: unknown, token: string | null = null): void => {
+  failedQueue.forEach((promise) => {
     if (error) {
-      prom.reject(error);
+      promise.reject(error);
     } else {
-      prom.resolve(token!);
+      promise.resolve(token as string);
     }
   });
+
   failedQueue = [];
 };
 
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => response,
+
   async (error: AxiosError<{ message?: string }>) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & {
-      _retry?: boolean;
-    };
+    const originalRequest = error.config as
+      | CustomAxiosRequestConfig
+      | undefined;
+
     const status = error.response?.status;
 
     // ─── Handle 401 Unauthorized ────────────────────────────
 
     if (status === 401 && originalRequest && !originalRequest._retry) {
-      // اگر خود refresh endpoint خطا داد → logout
       if (originalRequest.url?.includes("/auth/refresh-token/")) {
         useAuthStore.getState().resetAuth();
         safeRedirect("/auth");
+
         return Promise.reject(error);
       }
 
-      // registration endpoints با 401 → پاک کردن registration
-      const isRegistrationEndpoint = REGISTRATION_ENDPOINTS.some((endpoint) =>
-        originalRequest.url?.includes(endpoint),
+      const isRegistrationRequest = isRegistrationEndpoint(
+        originalRequest.url ?? "",
       );
 
-      if (isRegistrationEndpoint) {
+      if (
+        isRegistrationRequest ||
+        originalRequest._authMode === "registration"
+      ) {
         useAuthStore.getState().clearRegistration();
         safeRedirect("/auth");
+
         return Promise.reject(error);
       }
 
-      // اگر در حال refresh هستیم، درخواست رو در صف قرار بده
       if (isRefreshing) {
         return new Promise<string>((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
+          failedQueue.push({
+            resolve,
+            reject,
+          });
         })
           .then((token) => {
             originalRequest.headers.Authorization = `Bearer ${token}`;
+
             return axiosInstance(originalRequest);
           })
-          .catch((err) => Promise.reject(err));
+          .catch((refreshError) => {
+            return Promise.reject(refreshError);
+          });
       }
 
       originalRequest._retry = true;
@@ -173,13 +254,20 @@ axiosInstance.interceptors.response.use(
 
       try {
         const newAccessToken = await tokenService.refreshAccessToken();
+
+        updateAuthenticatedUser(newAccessToken);
+
         processQueue(null, newAccessToken);
+
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
+
         useAuthStore.getState().resetAuth();
         safeRedirect("/auth");
+
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
@@ -191,6 +279,8 @@ axiosInstance.interceptors.response.use(
     if (status === 403) {
       useAuthStore.getState().resetAuth();
       safeRedirect("/auth");
+
+      return Promise.reject(error);
     }
 
     // ─── Normalize Error ────────────────────────────────────
@@ -208,14 +298,35 @@ axiosInstance.interceptors.response.use(
   },
 );
 
-// ─── Helper ─────────────────────────────────────────────────
-let isRedirectingToAuth = false;
+// ─── Helpers ────────────────────────────────────────────────
+
+function updateAuthenticatedUser(accessToken: string): void {
+  const currentState = useAuthStore.getState();
+
+  if (
+    !currentState.authenticated ||
+    currentState.authenticated.status !== "accept"
+  ) {
+    currentState.setAuthenticatedUser("accept", accessToken);
+  }
+}
+
+let isRedirecting = false;
 
 function safeRedirect(path: string): void {
-  if (typeof window === "undefined") return;
-  if (isRedirectingToAuth) return;
-  if (window.location.pathname === path) return;
+  if (typeof window === "undefined") {
+    return;
+  }
 
-  isRedirectingToAuth = true;
+  if (isRedirecting) {
+    return;
+  }
+
+  if (window.location.pathname === path) {
+    return;
+  }
+
+  isRedirecting = true;
+
   window.location.replace(path);
 }

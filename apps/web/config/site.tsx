@@ -31,12 +31,12 @@ export const siteConfig = {
       type: "link",
     },
 
-    {
-      label: "مدل ها",
-      href: "/models",
-      icon: <StarFill className="scale-150" />,
-      type: "link",
-    },
+    // {
+    //   label: "مدل ها",
+    //   href: "/models",
+    //   icon: <StarFill className="scale-150" />,
+    //   type: "link",
+    // },
     {
       label: "پروژه ها",
       icon: <BriefcaseFill className="scale-150" />,

@@ -8,7 +8,7 @@ export const auth_3FieldConfig: FieldConfig[] = [
     name: "role",
     type: "select",
     variant: "secondary",
-    label: "نقش خود را انتخاب کنید",
+    label: "انتخاب نقش",
     options: [
       { label: "مدل", value: "model", icon: <Person /> },
       { label: "مدرس", value: "instructor", icon: <GraduationCap /> },
@@ -21,7 +21,7 @@ export const auth_3FieldConfig: FieldConfig[] = [
     name: "category",
     type: "select",
     variant: "secondary",
-    label: "دسته بندی خود را انتخاب کنید",
+    label: "انتخاب دسته بندی",
     placeholder: "دسته بندی",
     dynamicIdentifier: {
       dependsOn: "role",

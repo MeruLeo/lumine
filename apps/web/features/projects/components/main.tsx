@@ -7,6 +7,7 @@ import { Can } from "@/shared/components/authorization/can";
 import { ProjectAction } from "@/shared/lib/authorization/actions";
 import { Button } from "@heroui/react";
 import { Plus } from "@gravity-ui/icons";
+import { CreateProjectModal } from "./employer/add-project-modal";
 
 export const MainProjects = () => {
   const { data, isPending, isError, error, refetch } = useProjects();
@@ -60,10 +61,7 @@ export const MainProjects = () => {
       <section className="flex items-center justify-between">
         <HeaderProjects />
         <Can action={ProjectAction.Create}>
-          <Button size="lg">
-            <Plus />
-            ایجاد پروژه
-          </Button>
+          <CreateProjectModal />
         </Can>
       </section>
 

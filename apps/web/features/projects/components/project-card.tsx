@@ -14,10 +14,10 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
     <Link
       href={`/projects/${project.id}`}
       aria-label={`مشاهده جزئیات پروژه ${project.name}`}
-      className="group flex flex-col gap-4 rounded-4xl bg-card p-4 shadow-2xl"
+      className="group flex h-[250px] flex-col gap-4 rounded-4xl bg-card p-4 shadow-2xl"
     >
       <div className="flex items-center justify-between gap-2">
-        <span className="inline-flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
+        <span className="inline-flex items-center gap-1.5 text-xs text-text-placeholder-light dark:text-text-placeholder-dark">
           <Tag className="h-3.5 w-3.5" />
           {project.category.persion_name}
         </span>
@@ -28,17 +28,17 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
         <h3 className="line-clamp-1 text-base font-semibold  transition">
           {project.name}
         </h3>
-        <p className="line-clamp-2 text-sm leading-6 text-zinc-500 dark:text-zinc-400">
+        <p className="line-clamp-2 text-sm leading-6 text-text-placeholder-light dark:text-text-placeholder-dark">
           {project.description}
         </p>
       </div>
 
-      <div className="mt-auto flex flex-col gap-2.5 text-sm text-zinc-600 dark:text-zinc-300">
+      <div className="mt-auto flex flex-col gap-2.5 text-sm text-text-placeholder-light dark:text-text-placeholder-dark">
         <div className="flex items-center gap-2">
           <span className="font-medium">{formatBudget(project.budget)}</span>
           <span className="text-zinc-400">تومان</span>
         </div>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-zinc-500 dark:text-zinc-400">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-text-placeholder-light dark:text-text-placeholder-dark">
           <span className="flex items-center gap-1.5">
             <MapPin className="h-3.5 w-3.5" />
             {project.province.name}
@@ -52,8 +52,8 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 border-t border-zinc-100 pt-3 dark:border-zinc-800">
-        <span className="text-xs text-zinc-600 dark:text-zinc-300">
+      <div className="flex items-center gap-2 border-t border-border pt-3">
+        <span className="text-xs text-text-placeholder-light dark:text-text-placeholder-dark">
           {project.employer.fullName}
         </span>
       </div>

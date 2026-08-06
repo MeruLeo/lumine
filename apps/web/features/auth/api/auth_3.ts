@@ -7,6 +7,7 @@ import {
   UserRole,
   Category,
 } from "../types/auth_3";
+import { PaginatedResponse } from "@/shared/types/paginated";
 
 export async function setRole(
   payload: TechnicalInfo_RolePayload,
@@ -16,10 +17,31 @@ export async function setRole(
 }
 
 export async function getCategories(role: UserRole): Promise<Category[]> {
-  const { data } = await axiosInstance.get("/auth/categories/", {
-    headers: { type: role },
-  });
-  return data;
+  const categories: Category[] = [];
+
+  let page = 1;
+  let hasNextPage = true;
+
+  while (hasNextPage) {
+    const { data } = await axiosInstance.get<PaginatedResponse<Category>>(
+      "/auth/categories/",
+      {
+        headers: {
+          type: role,
+        },
+        params: {
+          page,
+        },
+      },
+    );
+
+    categories.push(...data.results);
+
+    hasNextPage = Boolean(data.next);
+    page += 1;
+  }
+
+  return categories;
 }
 
 export async function setCategory(

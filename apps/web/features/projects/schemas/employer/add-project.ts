@@ -1,71 +1,56 @@
 import { z } from "zod";
 
-const requiredNumberError = (fieldName: string) => ({
-  error: (issue: { input: unknown }) => {
-    if (issue.input === undefined || issue.input === null) {
-      return `${fieldName} الزامی است`;
-    }
-
-    return `${fieldName} باید یک عدد باشد`;
-  },
-});
-
-const requiredStringError = (fieldName: string) => ({
-  error: (issue: { input: unknown }) => {
-    if (issue.input === undefined || issue.input === null) {
-      return `${fieldName} الزامی است`;
-    }
-
-    return `${fieldName} باید متن باشد`;
-  },
+const calendarDateSchema = z.object({
+  year: z.number().int(),
+  month: z.number().int().min(1).max(12),
+  day: z.number().int().min(1).max(31),
 });
 
 export const createProjectSchema = z
   .object({
-    province_id: z
-      .number(requiredNumberError("انتخاب استان"))
-      .int("استان باید عدد صحیح باشد")
-      .positive("استان باید مثبت باشد"),
-
     name: z
-      .string(requiredStringError("نام پروژه"))
+      .string({ error: "نام پروژه الزامی است" })
       .trim()
       .min(3, "نام پروژه باید حداقل ۳ کاراکتر باشد")
       .max(100, "نام پروژه نباید بیشتر از ۱۰۰ کاراکتر باشد"),
 
     description: z
-      .string(requiredStringError("توضیحات پروژه"))
+      .string({ error: "توضیحات الزامی است" })
       .trim()
-      .min(10, "توضیحات پروژه باید حداقل ۱۰ کاراکتر باشد")
-      .max(1000, "توضیحات پروژه نباید بیشتر از ۱۰۰۰ کاراکتر باشد"),
+      .min(10, "توضیحات باید حداقل ۱۰ کاراکتر باشد")
+      .max(1000, "توضیحات نباید بیشتر از ۱۰۰۰ کاراکتر باشد"),
 
-    budget: z
-      .number(requiredNumberError("بودجه پروژه"))
+    category_id: z.coerce
+      .number({ error: "انتخاب دسته‌بندی الزامی است" })
+      .int("دسته‌بندی نامعتبر است")
+      .positive("دسته‌بندی نامعتبر است"),
+
+    province_id: z.coerce
+      .number({ error: "انتخاب استان الزامی است" })
+      .int("استان نامعتبر است")
+      .positive("استان نامعتبر است"),
+
+    budget: z.coerce
+      .number({ error: "بودجه الزامی است" })
       .int("بودجه باید عدد صحیح باشد")
-      .min(100_000, "بودجه باید حداقل ۱۰۰,۰۰۰ تومان باشد"),
+      .positive("بودجه باید مثبت باشد")
+      .min(100000, "بودجه باید حداقل ۱۰۰,۰۰۰ تومان باشد"),
 
-    category_id: z
-      .number(requiredNumberError("انتخاب دسته‌بندی"))
-      .int("دسته‌بندی باید عدد صحیح باشد")
-      .positive("دسته‌بندی باید مثبت باشد"),
-
-    start_date: z
-      .string(requiredStringError("تاریخ شروع"))
-      .regex(
-        /^\d{4}-\d{2}-\d{2}$/,
-        "فرمت تاریخ شروع باید به صورت YYYY-MM-DD باشد (مثال: 1405-05-10)",
-      ),
-
-    end_date: z
-      .string(requiredStringError("تاریخ پایان"))
-      .regex(
-        /^\d{4}-\d{2}-\d{2}$/,
-        "فرمت تاریخ پایان باید به صورت YYYY-MM-DD باشد (مثال: 1405-05-31)",
-      ),
+    start_date: calendarDateSchema,
+    end_date: calendarDateSchema,
   })
-  .refine((data) => data.end_date > data.start_date, {
-    message: "تاریخ پایان باید بعد از تاریخ شروع باشد",
-    path: ["end_date"],
-  });
+  .refine(
+    (data) => {
+      const toNumber = (date: z.infer<typeof calendarDateSchema>) =>
+        date.year * 10000 + date.month * 100 + date.day;
 
-export type CreateProjectType = z.infer<typeof createProjectSchema>;
+      return toNumber(data.end_date) > toNumber(data.start_date);
+    },
+    {
+      message: "تاریخ پایان باید بعد از تاریخ شروع باشد",
+      path: ["end_date"],
+    },
+  );
+
+export type CreateProjectFormInput = z.input<typeof createProjectSchema>;
+export type CreateProjectType = z.output<typeof createProjectSchema>;
