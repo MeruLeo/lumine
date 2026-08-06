@@ -5,17 +5,23 @@ import { ProjectList } from "./project-list";
 import { useProjects } from "../hooks/queries/use-projects";
 import { Can } from "@/shared/components/authorization/can";
 import { ProjectAction } from "@/shared/lib/authorization/actions";
-import { Button } from "@heroui/react";
-import { Plus } from "@gravity-ui/icons";
 import { CreateProjectModal } from "./employer/add-project-modal";
+import type { GetProjectsParams } from "../types/project-query";
+import { useState } from "react";
 
 export const MainProjects = () => {
-  const { data, isPending, isError, error, refetch } = useProjects();
+  const [filters, setFilters] = useState<GetProjectsParams>({});
+
+  const { data, isPending, isError, error, refetch } = useProjects(filters);
 
   if (isPending) {
     return (
       <div className="flex flex-col gap-6">
-        <HeaderProjects />
+        <HeaderProjects
+          initialSearch={filters.search}
+          initialProvince={filters.province}
+          onSearch={setFilters}
+        />
 
         <section
           className="flex min-h-64 items-center justify-center"
@@ -33,7 +39,11 @@ export const MainProjects = () => {
   if (isError) {
     return (
       <div className="flex flex-col gap-6">
-        <HeaderProjects />
+        <HeaderProjects
+          initialSearch={filters.search}
+          initialProvince={filters.province}
+          onSearch={setFilters}
+        />
 
         <section className="flex min-h-64 flex-col items-center justify-center gap-3 rounded-2xl border border-red-200 bg-red-50 p-6 text-center dark:border-red-900/50 dark:bg-red-950/20">
           <p className="text-sm font-medium text-red-700 dark:text-red-400">
@@ -59,7 +69,12 @@ export const MainProjects = () => {
   return (
     <div className="flex flex-col gap-6">
       <section className="flex items-center justify-between">
-        <HeaderProjects />
+        <HeaderProjects
+          initialSearch={filters.search}
+          initialProvince={filters.province}
+          onSearch={setFilters}
+        />
+
         <Can action={ProjectAction.Create}>
           <CreateProjectModal />
         </Can>

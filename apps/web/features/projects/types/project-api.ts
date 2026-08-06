@@ -16,7 +16,7 @@ export interface ProvinceDto {
   id: number;
   name: string;
   slug: string;
-  code: boolean | null;
+  code?: boolean | null;
 }
 
 export interface ProjectCategoryDto {
