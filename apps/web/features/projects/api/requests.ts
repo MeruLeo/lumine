@@ -1,7 +1,7 @@
 import { axiosInstance } from "@/shared/lib/http/axios";
 import { unwrapData } from "@/shared/lib/http/unwrap";
 
-import type { ApiEnvelopeDto } from "../types/project-api";
+import type { ApiEnvelopeDto } from "@/shared/types/api";
 import type {
   CreateProjectRequestBodyDto,
   ProjectRequestDto,

@@ -1,3 +1,4 @@
+import { ApiEnvelopeDto } from "@/shared/types/api";
 import type {
   ModerationStatus,
   ProjectRequestStatus,
@@ -67,12 +68,6 @@ export interface PaginatedResponseDto<TData> {
   next: string | null;
   previous: string | null;
   results: TData[];
-}
-
-export interface ApiEnvelopeDto<TData> {
-  success: boolean;
-  message: string;
-  data: TData;
 }
 
 export type ProjectsListDto =

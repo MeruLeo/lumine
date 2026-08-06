@@ -19,6 +19,17 @@ export const ProjectAction = {
   Complete: "project.complete",
 } as const;
 
-export type ProjectAction = (typeof ProjectAction)[keyof typeof ProjectAction];
+export const NotificationAction = {
+  Create: "project.create",
+  View: "project.view",
+  ViewList: "project.viewList",
 
-export type AppAction = ProjectAction;
+  Update: "project.update",
+  Delete: "project.delete",
+};
+
+export type ProjectAction = (typeof ProjectAction)[keyof typeof ProjectAction];
+export type NotificationAction =
+  (typeof NotificationAction)[keyof typeof NotificationAction];
+
+export type AppAction = [ProjectAction, NotificationAction];

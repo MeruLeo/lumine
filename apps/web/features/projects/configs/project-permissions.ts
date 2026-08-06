@@ -101,12 +101,6 @@ function isProjectVisibleForUser(
   user: AuthUser,
   project: Project,
 ): PermissionResult {
-  /**
-   * قانون پیشنهادی:
-   * - پروژه‌های approved و open برای همه کاربران تاییدشده قابل مشاهده‌اند.
-   * - مالک پروژه، پروژه خودش را حتی اگر draft یا pending باشد می‌بیند.
-   * - مدل assign شده هم پروژه خودش را می‌بیند.
-   */
   if (!isAuthenticated(user)) {
     return deny("برای مشاهده پروژه باید وارد حساب کاربری شوید.");
   }

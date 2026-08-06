@@ -1,9 +1,5 @@
 import { axiosInstance } from "@/shared/lib/http/axios";
-import type {
-  ApiEnvelopeDto,
-  ProjectDto,
-  ProjectsListDto,
-} from "../types/project-api";
+import type { ProjectDto, ProjectsListDto } from "../types/project-api";
 import type { Project } from "../types/project";
 import type { ProjectsListResponse } from "../types/project-list";
 import type { GetProjectsParams } from "../types/project-query";
@@ -11,6 +7,7 @@ import {
   projectDtoToProject,
   projectsListDtoToProjectsListResponse,
 } from "../lib/project-adapters";
+import { ApiEnvelopeDto } from "@/shared/types/api";
 
 function buildProjectsParams(params?: GetProjectsParams) {
   if (!params) return undefined;
