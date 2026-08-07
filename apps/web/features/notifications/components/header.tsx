@@ -1,6 +1,8 @@
 "use client";
 
 import { Bell } from "@gravity-ui/icons";
+import { Tabs } from "@heroui/react";
+import type { Key } from "react";
 import type { GetNotificationsParams } from "../types/notification-query";
 
 type NotificationFilter = "all" | "unread" | "read";
@@ -36,10 +38,19 @@ const filterOptions: FilterOption[] = [
 ];
 
 function getActiveFilter(filters: GetNotificationsParams): NotificationFilter {
-  if (filters.isSeen === false) return "unread";
-  if (filters.isSeen === true) return "read";
+  if (filters.isSeen === false) {
+    return "unread";
+  }
+
+  if (filters.isSeen === true) {
+    return "read";
+  }
 
   return "all";
+}
+
+function isNotificationFilter(key: Key): key is NotificationFilter {
+  return key === "all" || key === "unread" || key === "read";
 }
 
 export const NotificationsHeader = ({
@@ -50,10 +61,27 @@ export const NotificationsHeader = ({
 }: NotificationsHeaderProps) => {
   const activeFilter = getActiveFilter(filters);
 
+  const handleFilterChange = (key: Key) => {
+    if (!isNotificationFilter(key)) {
+      return;
+    }
+
+    const selectedOption = filterOptions.find((option) => option.key === key);
+
+    if (!selectedOption) {
+      return;
+    }
+
+    onFiltersChange({
+      ...filters,
+      isSeen: selectedOption.isSeen,
+    });
+  };
+
   return (
     <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-3">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
           <Bell className="size-5" />
         </span>
 
@@ -70,38 +98,23 @@ export const NotificationsHeader = ({
         </div>
       </div>
 
-      <div
-        role="tablist"
-        aria-label="فیلتر وضعیت اعلان‌ها"
-        className="grid w-full grid-cols-3 gap-1 rounded-xl bg-text-on-accent-light p-1 dark:bg-text-on-accent-dark sm:w-fit"
+      <Tabs
+        selectedKey={activeFilter}
+        onSelectionChange={handleFilterChange}
+        className="w-full sm:w-fit"
       >
-        {filterOptions.map((option) => {
-          const isActive = activeFilter === option.key;
+        <Tabs.ListContainer className="w-full sm:w-fit">
+          <Tabs.List aria-label="فیلتر وضعیت اعلان‌ها">
+            {filterOptions.map((option) => (
+              <Tabs.Tab key={option.key} id={option.key}>
+                {option.label}
 
-          return (
-            <button
-              key={option.key}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              onClick={() =>
-                onFiltersChange({
-                  isSeen: option.isSeen,
-                })
-              }
-              className={[
-                "min-h-9 rounded-lg px-3 text-xs font-medium transition-colors",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-                isActive
-                  ? "bg-primary text-white"
-                  : "text-text-secondary-light hover:bg-black/5 dark:text-text-secondary-dark dark:hover:bg-white/5",
-              ].join(" ")}
-            >
-              {option.label}
-            </button>
-          );
-        })}
-      </div>
+                <Tabs.Indicator />
+              </Tabs.Tab>
+            ))}
+          </Tabs.List>
+        </Tabs.ListContainer>
+      </Tabs>
     </section>
   );
 };

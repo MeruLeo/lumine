@@ -1,5 +1,3 @@
-// web/app/(dashboard)/notifications/[notificationRecipientId]/page.tsx
-
 import { NotificationDetails } from "@/features/notifications/components/notification-details";
 import type { Metadata } from "next";
 

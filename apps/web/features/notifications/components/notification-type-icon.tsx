@@ -13,7 +13,7 @@ interface NotificationTypeIconProps {
 }
 
 const sharedClassName =
-  "flex size-10 shrink-0 items-center justify-center rounded-lg";
+  "flex size-10 shrink-0 items-center justify-center rounded-full";
 
 export const NotificationTypeIcon = ({
   type,

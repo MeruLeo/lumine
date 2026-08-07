@@ -8,6 +8,15 @@ import type {
 } from "../types/notifications";
 import type { NotificationsListResponse } from "../types/notification-list";
 
+type NotificationRecipientsListDto = {
+  items: NotificationRecipientDto[];
+  count: number;
+};
+
+type NotificationRecipientsListInput =
+  | NotificationRecipientDto[]
+  | NotificationRecipientsListDto;
+
 export function notificationDtoToNotification(
   dto: NotificationDto,
 ): Notification {
@@ -47,10 +56,14 @@ export function notificationRecipientDtoToNotificationRecipient(
 }
 
 export function notificationRecipientsDtoToNotificationsListResponse(
-  dto: NotificationRecipientDto[],
+  dto: NotificationRecipientsListInput,
 ): NotificationsListResponse {
+  const recipients = Array.isArray(dto) ? dto : (dto.items ?? []);
+
+  const items = recipients.map(notificationRecipientDtoToNotificationRecipient);
+
   return {
-    items: dto.map(notificationRecipientDtoToNotificationRecipient),
-    count: dto.length,
+    items,
+    count: Array.isArray(dto) ? items.length : (dto.count ?? items.length),
   };
 }

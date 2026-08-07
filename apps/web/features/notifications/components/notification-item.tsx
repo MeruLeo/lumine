@@ -41,7 +41,7 @@ export const NotificationItem = ({ recipient }: NotificationItemProps) => {
   return (
     <article
       className={[
-        "relative flex gap-3 rounded-xl border p-4 transition-colors",
+        "relative flex gap-3 rounded-4xl border p-4 transition-colors",
         recipient.isSeen
           ? "border-border bg-card"
           : "border-primary/25 bg-primary/[0.04]",
@@ -93,7 +93,7 @@ export const NotificationItem = ({ recipient }: NotificationItemProps) => {
             <Button
               type="button"
               size="sm"
-              variant="light"
+              variant="ghost"
               isDisabled={markAsSeenMutation.isPending}
               onPress={handleMarkAsSeen}
               aria-label="علامت‌گذاری اعلان به‌عنوان خوانده‌شده"

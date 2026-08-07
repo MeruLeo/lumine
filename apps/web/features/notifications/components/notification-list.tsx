@@ -1,5 +1,3 @@
-// web/features/notifications/components/notification-list.tsx
-
 import { Bell } from "@gravity-ui/icons";
 import type { NotificationRecipient } from "../types/notifications";
 import { NotificationItem } from "./notification-item";

@@ -1,5 +1,3 @@
-// web/features/notifications/components/notification-details.tsx
-
 "use client";
 
 import Link from "next/link";
@@ -115,7 +113,7 @@ export const NotificationDetails = ({
     return (
       <NotificationsError
         error={new Error("اعلان موردنظر پیدا نشد.")}
-        onRetry={() => notificationQuery.refetch()}
+        onRetry={() => notificationQuery}
       />
     );
   }
@@ -125,11 +123,6 @@ export const NotificationDetails = ({
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
       <div className="flex items-center justify-between gap-3">
-        <Button as={Link} href="/notifications" size="sm">
-          <ArrowRight className="size-4" />
-          بازگشت به اعلان‌ها
-        </Button>
-
         <span
           className={[
             "rounded-lg px-2.5 py-1 text-xs font-medium",
@@ -144,7 +137,7 @@ export const NotificationDetails = ({
         </span>
       </div>
 
-      <article className="rounded-xl border border-border bg-card p-5 sm:p-6">
+      <article className="rounded-4xl border border-border bg-card p-5 sm:p-6">
         <header className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-start">
           <NotificationTypeIcon type={notification.typeNotif} />
 
