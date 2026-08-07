@@ -197,33 +197,40 @@ class GetCategories(generics.ListAPIView):
 class PrimaryCategoryAPIView(views.APIView, TokenUserMixin):
     permission_classes = [AllowAny]
 
-    # def get(self, request):
-    #     user = request.user
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [IsAuthenticated()]
+        return [AllowAny()]
+
+    def get(self, request):
+        user = request.user
         
-    #     try:
-    #         primary_category = UserCategory.objects.filter(
-    #             user=user, 
-    #             primary=True
-    #         ).select_related('category').first()  
+        try:
+            primary_category = UserCategory.objects.filter(
+                user=user, 
+                primary=True
+            ).select_related('category').first()  
 
-    #         data = {
-    #             "id": primary_category.category.id,
-    #             "name": primary_category.category.name,
-    #             "name_persian": primary_category.category.description
-    #         }
+            data = {
+                "id": primary_category.category.id,
+                "name": primary_category.category.name,
+                "name_persian": primary_category.category.persion_name
+            }
 
-    #         return ApiResponse.success(
-    #             message="fetch primary category successfully",
-    #             data=data
-    #         )
+            return ApiResponse.success(
+                message="fetch primary category successfully",
+                data=data
+            )
 
-    #     except:
-    #         return ApiResponse.error(
-    #             message="primary category",
-    #             errors={
-    #                 "category_id": "User is not have primary category"
-    #             }
-    #         )
+        except:
+            return ApiResponse.error(
+                message="primary category",
+                errors={
+                    "category_id": "User is not have primary category"
+                }
+            )
+        
     def get_object(self):
         return self.token_user
 
@@ -301,43 +308,6 @@ class TechnicalInfoAPIView(views.APIView, TokenUserMixin):
                 message="متاسفانه دسترسی کافی را ندارید",
             )
     
-
-    # def get_object(self):
-    #     return self.request.user.technical_info
-
-    # def patch(self, request):
-    #     instance = self.get_object()
-
-    #     if not instance:
-    #         return ApiResponse.error(
-    #             message="Techninal info not found"
-    #         )
-        
-    #     serializer = self.get_serializer(instance, data=request.data, partial=True)
-    #     serializer.is_valid(raise_exception=True)
-    #     serializer.save()
-
-    #     return ApiResponse.success(
-    #         message="Technical info updated successfully",
-    #         data=serializer.data 
-    #     )
-    
-
-    # def get(self, request):
-    #     technical_info = self.get_object()
-
-    #     if not technical_info:
-    #         return ApiResponse.error(
-    #             message="technical info not found"
-    #         )
-        
-    #     serializer = self.get_serializer(technical_info)
-
-    #     return ApiResponse.success(
-    #         message="Technical info fetched successfully",
-    #         data=serializer.data
-    #     )
-
 # {
 #   "company_type": "company",
 #   "company_name": "شرکت اجی بل بل",
@@ -376,40 +346,6 @@ class EmployerProfileAPIView(views.APIView, TokenUserMixin):
             return ApiResponse.error(
                 message="شما دسترسی کافی را ندارید",
             )
-    
-
-    # def patch(self, request):
-    #     instance = self.get_object()
-
-    #     if not instance:
-    #         return ApiResponse.error(
-    #             message="Employer profile not found"
-    #         )
-        
-    #     serializer = self.get_serializer(instance, data=request.data, partial=True)
-    #     serializer.is_valid(raise_exception=True)
-    #     serializer.save()
-
-    #     return ApiResponse.success(
-    #         message="Employer profile updated successfully",
-    #         data=serializer.data 
-    #     )
-    
-
-    # def get(self, request):
-    #     employer_profile = self.get_object()
-
-    #     if not employer_profile:
-    #         return ApiResponse.error(
-    #             message="Employer profile not found"
-    #         )
-        
-    #     serializer = self.get_serializer(employer_profile)
-
-    #     return ApiResponse.success(
-    #         message="Employer profile fetched successfully",
-    #         data=serializer.data
-    #     )
 
 
 class InstructorProfileAPIView(views.APIView, TokenUserMixin):
