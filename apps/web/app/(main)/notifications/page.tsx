@@ -1,19 +1,20 @@
-import { NotificationPanel } from "@/features/notifications";
-import { Metadata } from "next";
+import { MainNotifications } from "@/features/notifications/components/main";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "اعلانات",
+  title: "اعلان‌ها",
 };
 
-export default function Notifications() {
+export default function NotificationsPage() {
   return (
-    <section className="flex flex-col gap-4 p-10">
+    <section className="flex flex-col gap-4 p-4 sm:p-6 lg:p-10">
       <header>
-        <p className="mt-2 text-text-secondary-light dark:text-text-secondary-dark">
-          آخرین اعلان‌ها، هشدارها و فرصت‌های مرتبط با شما
+        <p className="mt-2 text-sm text-text-secondary-light dark:text-text-secondary-dark">
+          آخرین رویدادها و پیام‌های حساب کاربری شما
         </p>
       </header>
-      <NotificationPanel />
+
+      <MainNotifications />
     </section>
   );
 }
