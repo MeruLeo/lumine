@@ -9,24 +9,39 @@ import {
   FieldError,
 } from "@heroui/react";
 import { I18nProvider } from "react-aria-components";
-import { getLocalTimeZone } from "@internationalized/date";
+import {
+  getLocalTimeZone,
+  PersianCalendar,
+  today,
+  toCalendar,
+} from "@internationalized/date";
 import { ChevronDown } from "lucide-react";
+
+const persianToday = toCalendar(
+  today(getLocalTimeZone()),
+  new PersianCalendar(),
+);
 
 export function DatePickerField({ field, control }: any) {
   return (
-    <I18nProvider locale="fa-u-ca-persian">
+    <I18nProvider locale="fa-IR">
       <Controller
         name={field.name}
         control={control}
         render={({ field: rhf, fieldState }) => (
           <DatePicker
-            value={rhf.value}
-            onChange={rhf.onChange}
+            value={rhf.value ?? null}
+            onChange={(value) => {
+              console.log("selected:", value);
+              rhf.onChange(value);
+            }}
             granularity="day"
+            className="w-full"
+            defaultValue={today(getLocalTimeZone())}
           >
             <Label className="text-start">{field.label}</Label>
 
-            <DateField.Group variant={field.variant} fullWidth dir="ltr">
+            <DateField.Group variant={field.variant} fullWidth dir="rtl">
               <DateField.Input>
                 {(segment) => <DateField.Segment segment={segment} />}
               </DateField.Input>
@@ -39,7 +54,7 @@ export function DatePickerField({ field, control }: any) {
             </DateField.Group>
 
             <DatePicker.Popover>
-              <Calendar aria-label={field.label}>
+              <Calendar aria-label={field.label} defaultValue={persianToday}>
                 <Calendar.Header>
                   <Calendar.YearPickerTrigger>
                     <Calendar.YearPickerTriggerHeading />

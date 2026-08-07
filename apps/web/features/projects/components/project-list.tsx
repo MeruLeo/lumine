@@ -1,3 +1,4 @@
+import { Tray } from "@gravity-ui/icons";
 import type { Project } from "../types/project";
 import { ProjectCard } from "./project-card";
 
@@ -8,12 +9,13 @@ interface ProjectListProps {
 export const ProjectList = ({ projects }: ProjectListProps) => {
   if (projects.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-zinc-300 py-16 text-center dark:border-zinc-700">
-        <p className="text-sm font-medium text-zinc-700 dark:text-zinc-200">
-          پروژه‌ای یافت نشد
-        </p>
-        <p className="text-xs text-zinc-500 dark:text-zinc-400">
-          فیلترها را تغییر دهید یا بعداً دوباره سر بزنید
+      <div className="flex min-h-[240px] flex-col items-center justify-center  p-6 text-center">
+        <h3 className="text-base gap-4 font-semibold flex flex-col justify-center items-center">
+          <Tray className="size-15 text-primary" />
+          پروژه ای پیدا نشد
+        </h3>
+        <p className="mt-2 text-sm text-text-secondary-light dark:text-text-secondary-dark">
+          فیلترها را تغییر دهید یا بعداً دوباره بررسی کنید.
         </p>
       </div>
     );

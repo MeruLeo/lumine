@@ -31,55 +31,23 @@ export const siteConfig = {
       type: "link",
     },
 
-    {
-      label: "مدل ها",
-      href: "/models",
-      icon: <StarFill className="scale-150" />,
-      type: "link",
-    },
+    // {
+    //   label: "مدل ها",
+    //   href: "/models",
+    //   icon: <StarFill className="scale-150" />,
+    //   type: "link",
+    // },
     {
       label: "پروژه ها",
       icon: <BriefcaseFill className="scale-150" />,
       type: "link",
       href: "/projects",
-      // items: [
-      //   { label: "همه", href: "/projects", icon: <Component /> },
-      //   { label: "جاری", href: "/projects?status=active", icon: <Activity /> },
-      //   {
-      //     label: "در انتظار",
-      //     href: "/projects?status=pending",
-      //     icon: <Clock />,
-      //   },
-      //   {
-      //     label: "انجام شده",
-      //     href: "/projects?status=completed",
-      //     icon: <CheckCircle />,
-      //   },
-      //   {
-      //     label: "لغو شده",
-      //     href: "/projects?status=canceled",
-      //     icon: <XCircle />,
-      //   },
-      // ],
     },
     {
       label: "اعلانات",
       icon: <BellFill className="scale-150" />,
-      type: "dropdown",
+      type: "link",
       href: "/notifications",
-      items: [
-        { label: "همه", href: "/notifications", icon: <Component /> },
-        {
-          label: "خوانده نشده",
-          href: "/notifications?status=unread",
-          icon: <BellDot />,
-        },
-        {
-          label: "خوانده شده",
-          href: "/notifications?status=read",
-          icon: <CheckCircle />,
-        },
-      ],
     },
 
     {

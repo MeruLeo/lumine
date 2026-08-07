@@ -1,99 +1,118 @@
+// web/features/notifications/components/notification-item.tsx
+
 "use client";
 
-import { useState } from "react";
-import { Button, Chip, Separator } from "@heroui/react";
-import { NotificationItemModel } from "../types/notification";
-import {
-  formatNotificationDate,
-  getNotificationTypeClass,
-  getNotificationTypeLabel,
-  isNotificationExpired,
-} from "../utils/helpers/notification";
-import { NotificationMenu } from "./notification-menu";
+import Link from "next/link";
+import { Check } from "@gravity-ui/icons";
+import { Button } from "@heroui/react";
+import type { NotificationRecipient } from "../types/notifications";
+import { useMarkNotificationRecipientSeen } from "../hooks/mutations/use-mark-notification-recipient-seen";
+import { NotificationTypeIcon } from "./notification-type-icon";
+import { formatNotificationDate } from "../utils/format-notification-date";
 
 interface NotificationItemProps {
-  notification: NotificationItemModel;
-  onSeen?: (id: number) => void;
+  recipient: NotificationRecipient;
 }
 
-const CHAR_LIMIT = 85;
+function getSenderLabel(recipient: NotificationRecipient): string {
+  switch (recipient.notification.typeSender) {
+    case "lumine":
+      return "لومینه";
 
-export function NotificationItem({
-  notification,
-  onSeen,
-}: NotificationItemProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const unread = notification.recipient?.isSeen === false;
-  const expired = isNotificationExpired(notification);
+    case "user":
+      return "کاربر";
 
-  const message = notification.message || "";
-  const isLongMessage = message.length > CHAR_LIMIT;
+    default:
+      return "سیستم";
+  }
+}
 
-  const displayedMessage =
-    isLongMessage && !isExpanded
-      ? `${message.substring(0, CHAR_LIMIT)}...`
-      : message;
+export const NotificationItem = ({ recipient }: NotificationItemProps) => {
+  const markAsSeenMutation = useMarkNotificationRecipientSeen();
+
+  const handleMarkAsSeen = () => {
+    if (recipient.isSeen || markAsSeenMutation.isPending) {
+      return;
+    }
+
+    markAsSeenMutation.mutate(recipient.id);
+  };
 
   return (
-    <div
+    <article
       className={[
-        "rounded-4xl p-4 w-[300px] transition-all duration-300 flex flex-col justify-between min-h-[280px]",
-        unread
-          ? "bg-surface-elevated-light dark:bg-surface-elevated-dark"
-          : "bg-card",
-        expired ? "opacity-60" : "",
+        "relative flex gap-3 rounded-4xl border p-4 transition-colors",
+        recipient.isSeen
+          ? "border-border bg-card"
+          : "border-primary/25 bg-primary/[0.04]",
       ].join(" ")}
     >
-      <div className="flex flex-col gap-3 h-full justify-between">
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-wrap gap-1.5">
-            <Chip
-              className={`${getNotificationTypeClass(notification.type)} size-sm`}
-            >
-              {getNotificationTypeLabel(notification.type)}
-            </Chip>
+      {!recipient.isSeen && (
+        <span
+          className="absolute right-2 top-2 size-2 rounded-full bg-primary"
+          aria-label="خوانده‌نشده"
+        />
+      )}
 
-            {notification.isGlobal && (
-              <Chip className="bg-indigo size-sm">عمومی</Chip>
-            )}
+      <NotificationTypeIcon type={recipient.notification.typeNotif} />
 
-            {unread && <Chip className="bg-blue size-sm">خوانده نشده</Chip>}
+      <div className="min-w-0 flex-1">
+        <Link
+          href={`/notifications/${recipient.id}`}
+          aria-label={`مشاهده اعلان ${recipient.notification.title}`}
+          className="group block focus-visible:outline-none"
+        >
+          <div className="flex flex-col gap-1.5">
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <h3
+                className={[
+                  "line-clamp-1 text-sm transition-colors group-hover:text-primary",
+                  recipient.isSeen ? "font-medium" : "font-semibold",
+                ].join(" ")}
+              >
+                {recipient.notification.title}
+              </h3>
 
-            {expired && (
-              <Chip className="bg-surface-elevated-dark size-sm">
-                منقضی شده
-              </Chip>
-            )}
-          </div>
+              <time className="shrink-0 text-xs text-text-placeholder-light dark:text-text-placeholder-dark">
+                {formatNotificationDate(recipient.created)}
+              </time>
+            </div>
 
-          <h3 className="text-lg font-bold line-clamp-1">
-            {notification.title}
-          </h3>
-        </div>
+            <p className="line-clamp-2 text-sm leading-6 text-text-secondary-light dark:text-text-secondary-dark">
+              {recipient.notification.message}
+            </p>
 
-        <div className="flex-grow my-2">
-          <p className="text-sm leading-6 text-text-secondary-light dark:text-text-secondary-dark break-words">
-            {displayedMessage}
-          </p>
-          {isLongMessage && (
-            <Button size="sm" onPress={() => setIsExpanded(!isExpanded)}>
-              {isExpanded ? "بستن متن" : "مشاهده بیشتر"}
-            </Button>
-          )}
-        </div>
-
-        <div className="flex flex-col gap-2 mt-auto">
-          <Separator />
-
-          <div className="flex justify-between text-text-secondary-light dark:text-text-secondary-dark items-center text-xs">
-            <span className="truncate max-w-[120px]">
-              {notification.sender.firstName} {notification.sender.lastName}
+            <span className="text-xs text-text-placeholder-light dark:text-text-placeholder-dark">
+              ارسال‌شده توسط {getSenderLabel(recipient)}
             </span>
-            <span>{formatNotificationDate(notification.createdAt)}</span>
-            <NotificationMenu />
           </div>
-        </div>
+        </Link>
+
+        {!recipient.isSeen && (
+          <div className="mt-3 flex justify-end border-t border-border pt-3">
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              isDisabled={markAsSeenMutation.isPending}
+              onPress={handleMarkAsSeen}
+              aria-label="علامت‌گذاری اعلان به‌عنوان خوانده‌شده"
+            >
+              <Check className="size-4" />
+              {markAsSeenMutation.isPending ? "در حال ثبت..." : "خواندم"}
+            </Button>
+          </div>
+        )}
+
+        {markAsSeenMutation.isError && (
+          <p
+            role="alert"
+            className="mt-2 text-left text-xs text-red-600 dark:text-red-400"
+          >
+            ثبت وضعیت اعلان انجام نشد.
+          </p>
+        )}
       </div>
-    </div>
+    </article>
   );
-}
+};

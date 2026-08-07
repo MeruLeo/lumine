@@ -1,17 +1,23 @@
 "use client";
 
+import { Can } from "@/shared/components/authorization/can";
+import { ProjectAction } from "@/shared/lib/authorization/actions";
+import { useState } from "react";
+
+import { CreateProjectModal } from "./employer/add-project-modal";
 import { HeaderProjects } from "./header";
 import { ProjectList } from "./project-list";
 import { useProjects } from "../hooks/queries/use-projects";
+import type { GetProjectsParams } from "../types/project-query";
 
 export const MainProjects = () => {
-  const { data, isPending, isError, error, refetch } = useProjects();
+  const [filters, setFilters] = useState<GetProjectsParams>({});
 
-  if (isPending) {
-    return (
-      <div className="flex flex-col gap-6">
-        <HeaderProjects />
+  const { data, isPending, isError, error, refetch } = useProjects(filters);
 
+  const renderContent = () => {
+    if (isPending) {
+      return (
         <section
           className="flex min-h-64 items-center justify-center"
           aria-busy="true"
@@ -21,16 +27,12 @@ export const MainProjects = () => {
             در حال دریافت پروژه‌ها...
           </p>
         </section>
-      </div>
-    );
-  }
+      );
+    }
 
-  if (isError) {
-    return (
-      <div className="flex flex-col gap-6">
-        <HeaderProjects />
-
-        <section className="flex min-h-64 flex-col items-center justify-center gap-3 rounded-2xl border border-red-200 bg-red-50 p-6 text-center dark:border-red-900/50 dark:bg-red-950/20">
+    if (isError) {
+      return (
+        <section className="flex min-h-64 flex-col items-center justify-center gap-3 rounded-lg border border-red-200 bg-red-50 p-6 text-center dark:border-red-900/50 dark:bg-red-950/20">
           <p className="text-sm font-medium text-red-700 dark:text-red-400">
             دریافت پروژه‌ها با خطا مواجه شد
           </p>
@@ -47,17 +49,30 @@ export const MainProjects = () => {
             تلاش مجدد
           </button>
         </section>
-      </div>
-    );
-  }
+      );
+    }
 
-  return (
-    <div className="flex flex-col gap-6">
-      <HeaderProjects />
-
-      <section>
+    return (
+      <section aria-label="فهرست پروژه‌ها">
         <ProjectList projects={data?.items ?? []} />
       </section>
-    </div>
+    );
+  };
+
+  return (
+    <main className="flex flex-col gap-6">
+      <HeaderProjects
+        initialSearch={filters.search}
+        initialProvince={filters.province}
+        onSearch={setFilters}
+        action={
+          <Can action={ProjectAction.Create}>
+            <CreateProjectModal />
+          </Can>
+        }
+      />
+
+      {renderContent()}
+    </main>
   );
 };
