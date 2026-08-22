@@ -1,4 +1,4 @@
-import random
+from django.utils.crypto import get_random_string
 from .models import OTP, User
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.core.cache import cache
@@ -24,7 +24,7 @@ def generate_otp(phone):
     if cache.get(key):
         raise TooManyRequestsError
     
-    code = str(random.randint(100000, 999999))
+    code = get_random_string(allowed_chars="0123456789", length=6)
     cache.set(key, code, timeout=120)
     print(code)
     

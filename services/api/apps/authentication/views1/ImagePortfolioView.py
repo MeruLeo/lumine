@@ -41,45 +41,6 @@ class ImagePortfolioAPIView(views.APIView):
             return ApiResponse.success(
                 message="شما دسترسی کافی را ندارید",
             )
-        
-
-    # def get(self, request):
-    #     user = self.get_user()
-    #     instance = getattr(user, "images_portfolio", None)
-
-    #     if not instance:
-    #         return ApiResponse.error(
-    #             message="Portfolio images not found"
-    #         )
-
-    #     serializer = self.get_serializer(instance)
-
-    #     return ApiResponse.success(
-    #         message="portfolio fetched successfully",
-    #         data=serializer.data
-    #     )
-    
-
-    
-
-    # def patch(self, request):
-    #     user = self.get_user()
-
-    #     instance = getattr(user, "images_portfolio", None)
-
-    #     if not instance:
-    #         return ApiResponse.error(
-    #             message="portfolio not found"
-    #         )
-        
-    #     serializer = self.get_serializer(instance, data=request.data, partial=True)
-    #     serializer.is_valid(raise_exception=True)
-    #     serializer.save()
-
-    #     return ApiResponse.success(
-    #         message="updated portfolio successfully",
-    #         data=serializer.data
-    #     )
     
 
     
