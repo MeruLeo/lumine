@@ -36,7 +36,7 @@ export const MainNotifications = () => {
         />
       ) : (
         <NotificationList
-          notifications={notificationsQuery.data?.items ?? []}
+          notifications={notificationsQuery.data?.items.toReversed() ?? []}
           activeFilter={filters.isSeen}
         />
       )}

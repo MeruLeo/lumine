@@ -35,23 +35,38 @@ export type UserTechnicalInfo = Omit<
 
 export interface GetMeResponse {
   id: number;
+
   groups: UserGroup[];
+
   categories: UserCategory[];
+
   images_portfolio: UserPortfolio | null;
+
   technical_info: UserTechnicalInfo | null;
+
   employer_profile: string | null;
+
   instructor_profile: string | null;
 
   phone_number: string;
+
   first_name: string;
+
   last_name: string;
+
   national_code: string;
+
   nationality: BasicNationality;
+
   birth_date: BasicInfoPayload["birth_date"];
+
   gender: BasicGender;
 
   status: UserStatus;
+
   work_status: string | null;
+
   step_reg: number;
+
   date_joined: string;
 }
